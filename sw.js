@@ -7,9 +7,9 @@
 //    • Offline fallback page  → served from cache when network fails
 // ══════════════════════════════════════════════════════════════
 
-const CACHE_NAME     = 'mufasa-v1';
-const IMG_CACHE      = 'mufasa-images-v1';
-const DYNAMIC_CACHE  = 'mufasa-dynamic-v1';
+const CACHE_NAME     = 'mufasa-v2';
+const IMG_CACHE      = 'mufasa-images-v2';
+const DYNAMIC_CACHE  = 'mufasa-dynamic-v2';
 
 // ── Assets to pre-cache on install ──────────────────────────
 const SHELL_ASSETS = [
