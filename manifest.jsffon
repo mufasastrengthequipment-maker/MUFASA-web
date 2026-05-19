@@ -1,0 +1,25 @@
+{
+  "name": "MUFASA STRENGTH EQUIPMENT",
+  "short_name": "MUFASA",
+  "description": "Kenya's #1 home gym equipment. Premium rubber dumbbells delivered nationwide.",
+  "start_url": "/MU/",
+  "scope": "/MU/",
+  "display": "standalone",
+  "background_color": "#050403",
+  "theme_color": "#D4942A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "mufasa-header-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "mufasa-header-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
