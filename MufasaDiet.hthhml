@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUFASA — Diet Plans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#D4942A;--gl:#F0B84A;--gd:#A8741F;
+  --gdim:rgba(212,148,42,.2);--gfaint:rgba(212,148,42,.06);
+  --bg:#050403;--s1:#0C0A08;--s2:#121008;
+  --card:#18150F;--card2:#1F1B12;
+  --b1:rgba(212,148,42,.13);--b2:rgba(212,148,42,.32);
+  --w:#F4EFE4;--grey:#A09890;--dim:#7A7570;
+  --r:6px;--r2:12px;--r3:20px;
+  --prot:#7ec8a0;--carb:#F0B84A;--fat:#e07850;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* ── WRAPPER ── */
+.diet-wrap{padding:28px 5vw 80px;max-width:900px;margin:0 auto;}
+
+/* ── HEADER ── */
+.diet-header{margin-bottom:26px;}
+.stag{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+.sh{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,5vw,2.8rem);line-height:1;color:var(--w);margin-bottom:6px;}
+.ssub{font-size:.88rem;color:var(--grey);line-height:1.6;}
+
+/* ── TIP BANNER ── */
+.tip-banner{
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid var(--b2);border-left:3px solid var(--g);
+  border-radius:var(--r2);padding:14px 18px;margin-bottom:28px;
+  display:flex;align-items:flex-start;gap:12px;
+  animation:tipIn .5s ease both;
+}
+@keyframes tipIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+.tip-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.tip-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--g);margin-bottom:3px;}
+.tip-text{font-size:.86rem;color:var(--w);line-height:1.55;}
+.tip-refresh{background:none;border:none;color:var(--dim);font-size:.75rem;cursor:pointer;margin-top:5px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;padding:0;}
+.tip-refresh:hover{color:var(--g);}
+
+/* ── MACROS KEY ── */
+.macro-key{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+.mkey-item{display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);}
+.mkey-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* ── GOAL SELECTOR GRID ── */
+.goal-selector{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:28px;}
+
+.gcard{
+  background:var(--card);border:1px solid var(--b1);
+  border-radius:var(--r2);padding:18px 16px;
+  cursor:pointer;transition:all .22s;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:8px;
+}
+.gcard:hover{border-color:var(--b2);transform:translateY(-3px);box-shadow:0 10px 28px rgba(212,148,42,.09);}
+.gcard.sel{border-color:var(--g);background:var(--gdim);box-shadow:0 0 0 1px var(--g);}
+.gc-ic{font-size:2rem;line-height:1;}
+.gc-nm{font-family:'Anton',sans-serif;font-size:.95rem;letter-spacing:.04em;color:var(--w);}
+.gc-ds{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--grey);letter-spacing:.05em;}
+.gc-cal{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;color:var(--g);margin-top:2px;}
+.gcard.sel .gc-nm{color:var(--gl);}
+
+/* ── PLAN DETAIL ── */
+.pdetail{
+  background:var(--card);border:1px solid var(--b1);
+  border-radius:var(--r3);overflow:hidden;
+  margin-bottom:20px;
+  animation:pdin .35s ease both;
+}
+@keyframes pdin{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+.phd{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:14px;
+  padding:20px 22px;
+  background:var(--s1);border-bottom:1px solid var(--b1);
+  flex-wrap:wrap;
+}
+.pt{font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--w);line-height:1;margin-bottom:8px;}
+.pmetas{display:flex;gap:6px;flex-wrap:wrap;}
+.pmeta{
+  font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;
+  letter-spacing:.1em;color:var(--grey);
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:4px;padding:3px 9px;
+}
+.prt-btn{
+  background:linear-gradient(135deg,var(--gd),var(--gl));border:none;
+  color:var(--bg);padding:8px 16px;border-radius:var(--r);
+  font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  transition:opacity .2s;white-space:nowrap;flex-shrink:0;
+}
+.prt-btn:hover{opacity:.85;}
+
+.pbody{padding:22px;}
+
+/* ── MACRO BAR ── */
+.macro-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-bottom:24px;
+}
+.macro-item{
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:var(--r2);padding:14px 12px;text-align:center;
+}
+.macro-v{font-family:'Anton',sans-serif;font-size:1.1rem;line-height:1;margin-bottom:4px;}
+.macro-l{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);}
+.macro-item.prot .macro-v{color:var(--prot);}
+.macro-item.carb .macro-v{color:var(--carb);}
+.macro-item.fat  .macro-v{color:var(--fat);}
+
+/* ── VISUAL MACRO BARS ── */
+.macro-visual{
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:var(--r2);padding:14px 18px;margin-bottom:24px;
+}
+.macro-visual-label{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);margin-bottom:10px;}
+.mbar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mbar-row:last-child{margin-bottom:0;}
+.mbar-name{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;width:58px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;}
+.mbar-track{flex:1;height:7px;background:var(--b1);border-radius:4px;overflow:hidden;}
+.mbar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.mbar-val{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;width:52px;text-align:right;flex-shrink:0;}
+
+/* ── MEAL SECTIONS ── */
+.meal-sec{margin-bottom:24px;}
+.meal-sec:last-child{margin-bottom:0;}
+.meal-time{
+  font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--g);
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.meal-time::before{content:'';display:inline-block;width:20px;height:2px;background:var(--g);}
+
+.meal-cal-row{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:8px;
+}
+.meal-cal-tag{
+  font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:4px;padding:3px 8px;color:var(--grey);
+}
+.meal-cal-tag.total{color:var(--gl);border-color:var(--b2);}
+
+/* table */
+.mtable{width:100%;border-collapse:collapse;}
+.mtable thead tr{background:var(--s2);}
+.mtable th{
+  font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--grey);
+  padding:7px 10px;text-align:left;border-bottom:1px solid var(--b1);
+  white-space:nowrap;
+}
+.mtable td{padding:9px 10px;border-bottom:1px solid rgba(212,148,42,.05);font-size:.83rem;vertical-align:middle;}
+.mtable tbody tr:hover{background:var(--gfaint);}
+.mtable td.food{font-weight:500;color:var(--w);}
+.mtable td.qty{color:var(--grey);font-size:.78rem;}
+.mtable td.cal{color:var(--gl);font-weight:600;}
+.mtable td.prot{color:var(--prot);font-weight:600;}
+.mtable td.carb{color:var(--carb);}
+.mtable td.fat {color:var(--fat);}
+
+/* mobile overflow */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* ── TOTAL ROW ── */
+.total-row td{
+  border-top:1px solid var(--b2)!important;
+  border-bottom:none!important;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--s2)!important;
+}
+
+/* ── MEAL SUMMARY CARD (mobile toggle) ── */
+.meal-card{
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r2);overflow:hidden;margin-bottom:10px;
+  transition:border-color .2s;
+}
+.meal-card.open{border-color:var(--b2);}
+.meal-hd{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;cursor:pointer;
+  transition:background .2s;user-select:none;
+}
+.meal-hd:hover{background:var(--gfaint);}
+.meal-hd-time{
+  font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--g);flex:1;
+}
+.meal-hd-cal{
+  font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;
+  color:var(--grey);flex-shrink:0;
+}
+.meal-hd-arr{
+  color:var(--dim);font-size:16px;flex-shrink:0;
+  transition:transform .25s;
+}
+.meal-card.open .meal-hd-arr{transform:rotate(180deg);}
+.meal-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.77,0,.18,1);
+}
+.meal-card.open .meal-body{max-height:600px;}
+.meal-inner{padding:0 14px 14px;}
+
+/* ── DAILY SUMMARY ── */
+.day-summary{
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid var(--b2);border-radius:var(--r2);
+  padding:16px 20px;margin-bottom:24px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;
+}
+.ds-item{text-align:center;}
+.ds-val{font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--gl);line-height:1;}
+.ds-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);margin-top:3px;}
+
+/* ── SHOPPING LIST ── */
+.shopping-wrap{margin-top:28px;}
+.shopping-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:10px;
+}
+.shopping-title{font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--w);}
+.shopping-btn{
+  background:none;border:1px solid var(--b2);color:var(--gl);
+  font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 14px;border-radius:var(--r);cursor:pointer;
+  transition:all .2s;
+}
+.shopping-btn:hover{background:var(--gfaint);border-color:var(--g);}
+.shopping-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+.s-item{
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r);padding:9px 12px;
+  font-size:.83rem;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .18s;
+  user-select:none;
+}
+.s-item:hover{border-color:var(--b2);background:var(--gfaint);}
+.s-item.checked{opacity:.45;text-decoration:line-through;color:var(--dim);}
+.s-item-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:1.5px solid var(--b2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;transition:all .2s;
+}
+.s-item.checked .s-item-dot{background:var(--g);border-color:var(--g);color:var(--bg);}
+
+/* ── WA SHARE BUTTON ── */
+.wa-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#1a7a3a,#22a050);
+  color:#fff;font-family:'Barlow Condensed',sans-serif;
+  font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:10px 20px;border:none;border-radius:var(--r);cursor:pointer;
+  transition:opacity .2s;text-decoration:none;
+}
+.wa-btn:hover{opacity:.85;}
+
+/* ── EMPTY STATE ── */
+.empty{
+  padding:48px 20px;text-align:center;
+  font-family:'Barlow Condensed',sans-serif;font-size:.9rem;color:var(--grey);line-height:1.8;
+}
+.empty strong{color:var(--g);display:block;font-size:1.3rem;margin-bottom:8px;font-family:'Anton',sans-serif;}
+
+/* ── VIEW TOGGLE ── */
+.view-toggle{
+  display:flex;gap:4px;background:var(--s1);
+  border:1px solid var(--b1);border-radius:var(--r);
+  padding:3px;width:fit-content;margin-bottom:18px;
+}
+.vt-btn{
+  font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  background:none;border:none;color:var(--grey);
+  padding:5px 13px;border-radius:4px;cursor:pointer;transition:all .2s;
+}
+.vt-btn.on{background:var(--g);color:var(--bg);}
+
+/* ── PRINT ── */
+@media print{
+  body{background:#fff!important;color:#111!important;}
+  .no-print{display:none!important;}
+  .mtable th{background:#1a1a1a!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .mtable td{border-bottom:1px solid #eee!important;}
+  .phd,.macro-visual,.macro-row{background:#f9f6ef!important;}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .goal-selector{grid-template-columns:repeat(2,1fr);}
+  .macro-row{grid-template-columns:repeat(3,1fr);}
+  .day-summary{grid-template-columns:repeat(2,1fr);}
+  .phd{padding:16px;}
+  .pt{font-size:1.2rem;}
+  .shopping-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:420px){
+  .goal-selector{grid-template-columns:1fr 1fr;}
+  .macro-row{grid-template-columns:1fr 1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="diet-wrap">
+
+  <!-- HEADER -->
+  <div class="diet-header">
+    <div class="stag">Eat Right · Kenya</div>
+    <h1 class="sh">DIET PLANS</h1>
+    <p class="ssub">Nutrition is 70% of the game. Kenyan foods. Real quantities. Real results.</p>
+  </div>
+
+  <!-- TIP BANNER -->
+  <div class="tip-banner" id="tipBanner">
+    <div class="tip-icon" id="tipIcon">🥑</div>
+    <div>
+      <div class="tip-label">Nutrition Tip of the Week</div>
+      <div class="tip-text" id="tipText">Loading tip…</div>
+      <button class="tip-refresh" onclick="nextTip()">↻ NEXT TIP</button>
+    </div>
+  </div>
+
+  <!-- MACRO COLOR KEY -->
+  <div class="macro-key">
+    <div class="mkey-item"><div class="mkey-dot" style="background:var(--prot)"></div>Protein</div>
+    <div class="mkey-item"><div class="mkey-dot" style="background:var(--carb)"></div>Carbs</div>
+    <div class="mkey-item"><div class="mkey-dot" style="background:var(--fat)"></div>Fat</div>
+  </div>
+
+  <!-- GOAL CARDS -->
+  <div class="goal-selector" id="dGoalGrid"></div>
+
+  <!-- PLAN DETAIL (rendered here) -->
+  <div id="dPlanWrap"></div>
+
+</div>
+
+<!-- PRINT MODAL -->
+<div id="printModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(5,4,3,.97);overflow-y:auto;padding:40px 20px;">
+  <div style="background:#fff;color:#111;max-width:750px;width:100%;border-radius:8px;padding:40px;margin:0 auto;position:relative;">
+    <button onclick="closePrint()" style="position:absolute;top:14px;right:14px;background:none;border:1px solid #ccc;border-radius:4px;padding:6px 12px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;color:#333">✕ CLOSE</button>
+    <button onclick="window.print()" style="position:absolute;top:14px;right:90px;background:#D4942A;color:#fff;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;">🖨️ PRINT</button>
+    <div id="printContent"></div>
+    <p style="margin-top:20px;font-size:.72rem;color:#999">MUFASA STRENGTH EQUIPMENT · WhatsApp: 0115 228 712 · mufasastrength.com</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//   TIPS
+// ══════════════════════════════════════
+const TIPS=[
+  {icon:'🥑',text:'Prioritise protein at every meal. Aim for at least 25–30g per sitting — eggs, fish, chicken, beef, beans, or yogurt. Protein keeps you full and preserves muscle.'},
+  {icon:'🍠',text:'Sweet potato is Kenya\'s best pre-workout carb. Eat 100–150g about 60–90 minutes before training for steady energy without the crash.'},
+  {icon:'💧',text:'Drink at least 2 litres of water daily. Performance drops as soon as you are 2% dehydrated. Start every morning with a full glass before anything else.'},
+  {icon:'🧪',text:'You cannot out-train a bad diet. If fat loss is your goal, your calorie intake matters more than any workout plan. Track your food for just one week to see where you stand.'},
+  {icon:'🥚',text:'Eggs are the most complete protein available in Kenya at a low cost. 3 whole eggs give you 18g protein and critical vitamins. Do not throw away the yolk.'},
+  {icon:'🌿',text:'Add sukuma wiki or spinach to at least two meals daily. These are packed with iron, calcium, and vitamins for a fraction of the cost of imported vegetables.'},
+  {icon:'⏰',text:'Meal timing matters less than meal quality. Eat 3–5 structured meals and focus on hitting your protein target. Skipping meals often leads to overeating later.'},
+  {icon:'🫘',text:'Beans and lentils are underrated. Cheap, high in protein, high in fibre, and extremely filling. A cup of cooked lentils delivers 18g protein for under KSH 30.'},
+];
+let tipIdx=Math.floor(Math.random()*TIPS.length);
+function renderTip(){
+  const t=TIPS[tipIdx];
+  document.getElementById('tipIcon').textContent=t.icon;
+  document.getElementById('tipText').textContent=t.text;
+}
+function nextTip(){tipIdx=(tipIdx+1)%TIPS.length;renderTip();}
+
+// ══════════════════════════════════════
+//   DIET DATA — Kenyan foods
+// ══════════════════════════════════════
+const DIET_PLANS=[
+  {id:'lean',icon:'🥗',name:'LEAN CUT',goal:'Weight Loss',cal:'1,850 kcal',macros:{p:'155g',c:'185g',f:'52g'},
+    tip:'Eat slowly, drink water before meals, and never skip breakfast. Ugali + tilapia is one of Kenya\'s best fat-loss meals.',
+    meals:[
+      {time:'7:00 AM — Breakfast 🌅',rows:[
+        {food:'Oats (rolled)',qty:'80g / 1 cup',cal:300,p:10,c:54,f:6},
+        {food:'Boiled Eggs',qty:'3 whole eggs',cal:210,p:18,c:0,f:15},
+        {food:'Banana',qty:'1 medium (120g)',cal:105,p:1,c:27,f:0},
+        {food:'Black coffee / green tea',qty:'1 cup',cal:5,p:0,c:0,f:0},
+      ]},
+      {time:'10:30 AM — Mid-Morning 🍎',rows:[
+        {food:'Plain yogurt',qty:'150g / ½ cup',cal:130,p:15,c:8,f:4},
+        {food:'Apple',qty:'1 medium (180g)',cal:95,p:0,c:25,f:0},
+      ]},
+      {time:'1:00 PM — Lunch 🍽️',rows:[
+        {food:'Ugali',qty:'200g / 1 cup cooked',cal:290,p:5,c:65,f:1},
+        {food:'Tilapia / mackerel (grilled)',qty:'150g fillet',cal:200,p:30,c:0,f:8},
+        {food:'Sukuma wiki',qty:'1 cup cooked',cal:40,p:3,c:5,f:1},
+        {food:'Tomato & avocado salad',qty:'½ avo + 1 tomato',cal:110,p:1,c:6,f:8},
+      ]},
+      {time:'4:00 PM — Pre-Workout 💪',rows:[
+        {food:'Sweet potato (boiled)',qty:'150g / 1 medium',cal:130,p:2,c:30,f:0},
+        {food:'Boiled eggs',qty:'2 eggs',cal:140,p:12,c:0,f:10},
+      ]},
+      {time:'7:30 PM — Dinner 🌙',rows:[
+        {food:'Brown rice',qty:'150g cooked / ¾ cup',cal:165,p:4,c:35,f:1},
+        {food:'Chicken breast (grilled)',qty:'180g',cal:220,p:40,c:0,f:5},
+        {food:'Mixed vegetables (stir-fried)',qty:'1 cup',cal:60,p:3,c:10,f:2},
+      ]},
+    ]
+  },
+  {id:'bulk',icon:'🍗',name:'MUSCLE FUEL',goal:'Muscle Gain',cal:'3,050 kcal',macros:{p:'200g',c:'340g',f:'80g'},
+    tip:'Eat every 3 hours, prioritise whole foods over supplements, and never go to bed hungry during a bulk.',
+    meals:[
+      {time:'6:30 AM — Breakfast 🌅',rows:[
+        {food:'Oats',qty:'120g / 1.5 cups',cal:450,p:15,c:80,f:9},
+        {food:'Whole eggs',qty:'4 eggs',cal:280,p:24,c:0,f:20},
+        {food:'Peanut butter',qty:'2 tbsp (32g)',cal:190,p:8,c:6,f:16},
+        {food:'Whole milk',qty:'250ml / 1 cup',cal:150,p:8,c:12,f:8},
+        {food:'Banana',qty:'2 medium',cal:210,p:2,c:54,f:0},
+      ]},
+      {time:'10:00 AM — Morning Snack 🥜',rows:[
+        {food:'Boiled eggs',qty:'3 eggs',cal:210,p:18,c:0,f:15},
+        {food:'Brown bread',qty:'3 slices',cal:240,p:10,c:46,f:3},
+        {food:'Avocado',qty:'½ (70g)',cal:115,p:1,c:6,f:10},
+      ]},
+      {time:'1:00 PM — Lunch 🍽️',rows:[
+        {food:'Rice (white/brown)',qty:'300g cooked / 1.5 cups',cal:390,p:8,c:85,f:1},
+        {food:'Beef (lean, grilled)',qty:'200g',cal:320,p:45,c:0,f:14},
+        {food:'Sukuma wiki',qty:'1.5 cups cooked',cal:60,p:4,c:7,f:2},
+        {food:'Beans / lentils',qty:'100g cooked',cal:115,p:8,c:20,f:0},
+      ]},
+      {time:'4:00 PM — Pre-Workout 💪',rows:[
+        {food:'Ugali',qty:'250g / 1.25 cups cooked',cal:360,p:6,c:80,f:1},
+        {food:'Chicken breast',qty:'150g',cal:185,p:33,c:0,f:4},
+      ]},
+      {time:'7:00 PM — Dinner 🌙',rows:[
+        {food:'Sweet potato',qty:'200g',cal:172,p:3,c:40,f:0},
+        {food:'Eggs (scrambled)',qty:'4 eggs',cal:280,p:24,c:0,f:20},
+      ]},
+      {time:'9:30 PM — Night Snack 🌙',rows:[
+        {food:'Full-fat yogurt',qty:'200g',cal:140,p:8,c:14,f:6},
+        {food:'Groundnuts / peanuts',qty:'40g / handful',cal:230,p:10,c:6,f:20},
+      ]},
+    ]
+  },
+  {id:'maint',icon:'⚖️',name:'MAINTENANCE',goal:'Stay Lean',cal:'2,400 kcal',macros:{p:'160g',c:'270g',f:'70g'},
+    tip:'Consistency wins. Maintenance is not boring — it\'s the foundation of long-term health. Hit protein daily and train hard.',
+    meals:[
+      {time:'7:00 AM — Breakfast 🌅',rows:[
+        {food:'Eggs (boiled)',qty:'3 eggs',cal:210,p:18,c:0,f:15},
+        {food:'Brown bread',qty:'2 slices',cal:160,p:6,c:30,f:2},
+        {food:'Avocado',qty:'½ medium',cal:115,p:1,c:6,f:10},
+        {food:'Tea (no sugar)',qty:'1 cup',cal:15,p:0,c:2,f:0},
+      ]},
+      {time:'10:30 AM — Snack 🍌',rows:[
+        {food:'Banana',qty:'1 medium',cal:105,p:1,c:27,f:0},
+        {food:'Boiled egg',qty:'1 egg',cal:70,p:6,c:0,f:5},
+      ]},
+      {time:'1:00 PM — Lunch 🍽️',rows:[
+        {food:'Ugali or Rice',qty:'200g cooked',cal:290,p:5,c:65,f:1},
+        {food:'Chicken or fish',qty:'150g',cal:200,p:30,c:0,f:8},
+        {food:'Sukuma / spinach',qty:'1 cup cooked',cal:40,p:3,c:5,f:1},
+        {food:'Tomato salad',qty:'1 large tomato',cal:25,p:1,c:5,f:0},
+      ]},
+      {time:'4:00 PM — Pre-Workout 💪',rows:[
+        {food:'Sweet potato',qty:'130g',cal:112,p:2,c:26,f:0},
+        {food:'Peanut butter',qty:'1 tbsp (16g)',cal:95,p:4,c:3,f:8},
+      ]},
+      {time:'7:30 PM — Dinner 🌙',rows:[
+        {food:'Brown rice',qty:'150g cooked',cal:165,p:4,c:35,f:1},
+        {food:'Beef / chicken / fish',qty:'160g',cal:240,p:35,c:0,f:10},
+        {food:'Mixed veg stir-fry',qty:'1 cup',cal:60,p:3,c:10,f:2},
+      ]},
+    ]
+  },
+  {id:'plant',icon:'🌿',name:'PLANT-BASED',goal:'Vegan Strength',cal:'2,100 kcal',macros:{p:'130g',c:'280g',f:'60g'},
+    tip:'Combine different plant proteins (beans + rice, lentils + bread) at every meal to ensure complete amino acid profiles.',
+    meals:[
+      {time:'7:00 AM — Breakfast 🌅',rows:[
+        {food:'Oats with soy milk',qty:'80g oats + 200ml soy milk',cal:340,p:14,c:52,f:9},
+        {food:'Chia seeds',qty:'2 tbsp (28g)',cal:140,p:5,c:12,f:9},
+        {food:'Banana + berries',qty:'1 banana + ½ cup berries',cal:130,p:1,c:33,f:0},
+      ]},
+      {time:'10:30 AM — Snack 🥜',rows:[
+        {food:'Groundnuts (plain)',qty:'40g / small handful',cal:230,p:10,c:6,f:20},
+        {food:'Orange',qty:'1 medium',cal:70,p:1,c:17,f:0},
+      ]},
+      {time:'1:00 PM — Lunch 🍽️',rows:[
+        {food:'Brown rice',qty:'200g cooked / 1 cup',cal:220,p:5,c:46,f:2},
+        {food:'Lentil stew',qty:'200g / 1 cup',cal:230,p:18,c:38,f:1},
+        {food:'Spinach / kale (stir-fried)',qty:'1 cup',cal:35,p:3,c:4,f:1},
+        {food:'Avocado',qty:'½ medium',cal:115,p:1,c:6,f:10},
+      ]},
+      {time:'4:00 PM — Pre-Workout 💪',rows:[
+        {food:'Sweet potato',qty:'150g',cal:130,p:2,c:30,f:0},
+        {food:'Peanut butter on bread',qty:'2 tbsp + 1 slice',cal:275,p:10,c:23,f:18},
+      ]},
+      {time:'7:30 PM — Dinner 🌙',rows:[
+        {food:'Kidney beans + chickpeas',qty:'200g cooked mixed',cal:280,p:18,c:50,f:2},
+        {food:'Coconut rice',qty:'150g cooked',cal:210,p:4,c:38,f:5},
+        {food:'Kachumbari',qty:'1 cup (tomato/onion/coriander)',cal:35,p:1,c:7,f:0},
+      ]},
+    ]
+  },
+];
+
+// ══════════════════════════════════════
+//   STATE
+// ══════════════════════════════════════
+let selPlan=null;
+let viewMode='cards'; // 'cards' or 'table'
+let checkedItems=new Set();
+
+// ══════════════════════════════════════
+//   HELPERS
+// ══════════════════════════════════════
+function mealTotal(rows){
+  return rows.reduce((a,r)=>({cal:a.cal+r.cal,p:a.p+r.p,c:a.c+r.c,f:a.f+r.f}),{cal:0,p:0,c:0,f:0});
+}
+function dayTotal(meals){
+  return meals.reduce((a,m)=>{const t=mealTotal(m.rows);return{cal:a.cal+t.cal,p:a.p+t.p,c:a.c+t.c,f:a.f+t.f};},{cal:0,p:0,c:0,f:0});
+}
+
+// ══════════════════════════════════════
+//   INIT GOAL GRID
+// ══════════════════════════════════════
+function initGoalGrid(){
+  document.getElementById('dGoalGrid').innerHTML=DIET_PLANS.map(d=>{
+    const tot=dayTotal(d.meals);
+    return `<div class="gcard" id="dg-${d.id}" onclick="selDPlan('${d.id}')">
+      <div class="gc-ic">${d.icon}</div>
+      <div class="gc-nm">${d.name}</div>
+      <div class="gc-ds">${d.goal}</div>
+      <div class="gc-cal">🔥 ${d.cal}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+//   SELECT PLAN
+// ══════════════════════════════════════
+function selDPlan(id){
+  selPlan=DIET_PLANS.find(d=>d.id===id);
+  checkedItems=new Set();
+  document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
+  const gc=document.getElementById('dg-'+id);if(gc)gc.classList.add('sel');
+
+  const tot=dayTotal(selPlan.meals);
+  // Compute max macro for bar widths
+  const maxMacro=Math.max(parseInt(selPlan.macros.p),parseInt(selPlan.macros.c),parseInt(selPlan.macros.f));
+
+  const barWidth=(val,max)=>Math.round((val/max)*100);
+
+  const mealsHTML=selPlan.meals.map((m,mi)=>{
+    const mt=mealTotal(m.rows);
+    const rowsHTML=m.rows.map(r=>`
+      <tr>
+        <td class="food">${r.food}</td>
+        <td class="qty">${r.qty}</td>
+        <td class="cal">${r.cal}</td>
+        <td class="prot">${r.p}g</td>
+        <td class="carb">${r.c}g</td>
+        <td class="fat">${r.f}g</td>
+      </tr>`).join('');
+    const totalRow=`<tr class="total-row">
+      <td colspan="2" style="color:var(--gl)">MEAL TOTAL</td>
+      <td class="cal">${mt.cal}</td>
+      <td class="prot">${mt.p}g</td>
+      <td class="carb">${mt.c}g</td>
+      <td class="fat">${mt.f}g</td>
+    </tr>`;
+
+    if(viewMode==='table'){
+      return `<div class="meal-sec">
+        <div class="meal-time">${m.time}</div>
+        <div class="table-wrap">
+          <table class="mtable">
+            <thead><tr>
+              <th>FOOD</th><th>QUANTITY</th><th>CAL</th>
+              <th style="color:var(--prot)">PROTEIN</th>
+              <th style="color:var(--carb)">CARBS</th>
+              <th style="color:var(--fat)">FAT</th>
+            </tr></thead>
+            <tbody>${rowsHTML}${totalRow}</tbody>
+          </table>
+        </div>
+      </div>`;
+    } else {
+      // Card / accordion mode
+      const itemsHTML=m.rows.map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(212,148,42,.06);">
+          <div>
+            <div style="font-size:.86rem;font-weight:500;color:var(--w)">${r.food}</div>
+            <div style="font-size:.75rem;color:var(--grey);margin-top:1px">${r.qty}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:12px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;color:var(--gl)">${r.cal} kcal</div>
+            <div style="font-size:.7rem;margin-top:2px">
+              <span style="color:var(--prot)">${r.p}g P</span>
+              <span style="color:var(--dim)"> · </span>
+              <span style="color:var(--carb)">${r.c}g C</span>
+              <span style="color:var(--dim)"> · </span>
+              <span style="color:var(--fat)">${r.f}g F</span>
+            </div>
+          </div>
+        </div>`).join('');
+
+      return `<div class="meal-card" id="meal-${mi}">
+        <div class="meal-hd" onclick="toggleMeal(${mi})">
+          <div class="meal-hd-time">${m.time}</div>
+          <div class="meal-hd-cal">${mt.cal} kcal</div>
+          <div class="meal-hd-arr">⌄</div>
+        </div>
+        <div class="meal-body">
+          <div class="meal-inner">
+            ${itemsHTML}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;margin-top:2px;border-top:1px solid var(--b2);">
+              <span style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)">Meal Total</span>
+              <div style="display:flex;gap:10px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;">
+                <span style="color:var(--gl)">${mt.cal} kcal</span>
+                <span style="color:var(--prot)">${mt.p}g P</span>
+                <span style="color:var(--carb)">${mt.c}g C</span>
+                <span style="color:var(--fat)">${mt.f}g F</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }).join('');
+
+  // Shopping list
+  const allFoods=[...new Set(selPlan.meals.flatMap(m=>m.rows.map(r=>r.food)))];
+  const shoppingHTML=allFoods.map((f,i)=>`
+    <div class="s-item" id="si-${i}" onclick="toggleShop(${i},'${f.replace(/'/g,"\\'")}')">
+      <div class="s-item-dot">✓</div>
+      <span>${f}</span>
+    </div>`).join('');
+
+  document.getElementById('dPlanWrap').innerHTML=`
+    <div class="pdetail">
+      <!-- PLAN HEADER -->
+      <div class="phd">
+        <div>
+          <div class="pt">${selPlan.icon} ${selPlan.name} PLAN</div>
+          <div class="pmetas">
+            <span class="pmeta">🎯 ${selPlan.goal}</span>
+            <span class="pmeta">🔥 ${selPlan.cal}</span>
+            <span class="pmeta">🥩 ${selPlan.macros.p} protein</span>
+            <span class="pmeta">🍚 ${selPlan.macros.c} carbs</span>
+            <span class="pmeta">🥑 ${selPlan.macros.f} fat</span>
+          </div>
+        </div>
+        <button class="prt-btn no-print" onclick="doPrint()">🖨️ PRINT PLAN</button>
+      </div>
+
+      <div class="pbody">
+
+        <!-- DAILY TOTALS -->
+        <div class="day-summary">
+          <div class="ds-item"><div class="ds-val">${tot.cal}</div><div class="ds-lbl">Total kcal</div></div>
+          <div class="ds-item"><div class="ds-val" style="color:var(--prot)">${tot.p}g</div><div class="ds-lbl">Protein</div></div>
+          <div class="ds-item"><div class="ds-val" style="color:var(--carb)">${tot.c}g</div><div class="ds-lbl">Carbs</div></div>
+          <div class="ds-item"><div class="ds-val" style="color:var(--fat)">${tot.f}g</div><div class="ds-lbl">Fat</div></div>
+        </div>
+
+        <!-- MACRO VISUAL BARS -->
+        <div class="macro-visual">
+          <div class="macro-visual-label">Daily Macro Split</div>
+          <div class="mbar-row">
+            <div class="mbar-name" style="color:var(--prot)">Protein</div>
+            <div class="mbar-track"><div class="mbar-fill" id="bar-p" style="background:var(--prot);width:0%"></div></div>
+            <div class="mbar-val" style="color:var(--prot)">${selPlan.macros.p}</div>
+          </div>
+          <div class="mbar-row">
+            <div class="mbar-name" style="color:var(--carb)">Carbs</div>
+            <div class="mbar-track"><div class="mbar-fill" id="bar-c" style="background:var(--carb);width:0%"></div></div>
+            <div class="mbar-val" style="color:var(--carb)">${selPlan.macros.c}</div>
+          </div>
+          <div class="mbar-row">
+            <div class="mbar-name" style="color:var(--fat)">Fat</div>
+            <div class="mbar-track"><div class="mbar-fill" id="bar-f" style="background:var(--fat);width:0%"></div></div>
+            <div class="mbar-val" style="color:var(--fat)">${selPlan.macros.f}</div>
+          </div>
+        </div>
+
+        <!-- PLAN TIP -->
+        <div style="background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--g);border-radius:var(--r2);padding:12px 16px;margin-bottom:24px;font-size:.84rem;color:var(--grey);line-height:1.6;">
+          <span style="color:var(--g);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;">PLAN TIP </span>
+          ${selPlan.tip}
+        </div>
+
+        <!-- VIEW TOGGLE -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);">Daily Meals</div>
+          <div class="view-toggle">
+            <button class="vt-btn ${viewMode==='cards'?'on':''}" onclick="setView('cards')">📋 Cards</button>
+            <button class="vt-btn ${viewMode==='table'?'on':''}" onclick="setView('table')">📊 Table</button>
+          </div>
+        </div>
+
+        <!-- MEALS -->
+        <div id="mealsContainer">${mealsHTML}</div>
+
+        <!-- SHOPPING LIST -->
+        <div class="shopping-wrap">
+          <div class="shopping-header">
+            <div class="shopping-title">🛒 Shopping List</div>
+            <button class="shopping-btn" onclick="clearChecks()">↺ Reset</button>
+          </div>
+          <div class="shopping-grid">${shoppingHTML}</div>
+        </div>
+
+        <!-- WA SHARE -->
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <a class="wa-btn" href="https://wa.me/254115228712?text=${encodeURIComponent('🥗 I want to follow the MUFASA ' + selPlan.name + ' plan! Can you send me more details?')}" target="_blank">💬 DISCUSS ON WHATSAPP</a>
+          <button onclick="doPrint()" class="shopping-btn no-print">🖨️ PRINT PLAN</button>
+        </div>
+
+      </div>
+    </div>`;
+
+  // Animate macro bars after render
+  setTimeout(()=>{
+    const pVal=parseInt(selPlan.macros.p);
+    const cVal=parseInt(selPlan.macros.c);
+    const fVal=parseInt(selPlan.macros.f);
+    const maxV=Math.max(pVal,cVal,fVal);
+    const bp=document.getElementById('bar-p');
+    const bc=document.getElementById('bar-c');
+    const bf=document.getElementById('bar-f');
+    if(bp)bp.style.width=Math.round(pVal/maxV*100)+'%';
+    if(bc)bc.style.width=Math.round(cVal/maxV*100)+'%';
+    if(bf)bf.style.width=Math.round(fVal/maxV*100)+'%';
+  },80);
+
+  // Auto-open first meal
+  if(viewMode==='cards'){
+    setTimeout(()=>{
+      const first=document.getElementById('meal-0');
+      if(first)first.classList.add('open');
+    },100);
+  }
+
+  document.getElementById('dPlanWrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function toggleMeal(i){
+  const el=document.getElementById('meal-'+i);
+  if(el)el.classList.toggle('open');
+}
+
+function setView(mode){
+  viewMode=mode;
+  if(selPlan)selDPlan(selPlan.id);
+}
+
+function toggleShop(i,food){
+  const el=document.getElementById('si-'+i);
+  if(!el)return;
+  if(checkedItems.has(food)){checkedItems.delete(food);el.classList.remove('checked');}
+  else{checkedItems.add(food);el.classList.add('checked');}
+}
+
+function clearChecks(){
+  checkedItems.clear();
+  document.querySelectorAll('.s-item').forEach(el=>el.classList.remove('checked'));
+}
+
+// ══════════════════════════════════════
+//   PRINT
+// ══════════════════════════════════════
+function doPrint(){
+  if(!selPlan)return;
+  const tot=dayTotal(selPlan.meals);
+  const html=`
+    <h2 style="font-family:Arial,sans-serif;font-size:1.6rem;color:#1a1a1a;margin-bottom:4px">${selPlan.icon} ${selPlan.name} DIET PLAN</h2>
+    <p style="font-size:.82rem;color:#555;margin-bottom:16px">Goal: ${selPlan.goal} · ${selPlan.cal} · Protein: ${selPlan.macros.p} | Carbs: ${selPlan.macros.c} | Fat: ${selPlan.macros.f}</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:#f9f6ef;border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:#D4942A">${tot.cal}</div><div style="font-size:.7rem;color:#666">Total kcal</div></div>
+      <div style="background:#f9f6ef;border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:#22a050">${tot.p}g</div><div style="font-size:.7rem;color:#666">Protein</div></div>
+      <div style="background:#f9f6ef;border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:#D4942A">${tot.c}g</div><div style="font-size:.7rem;color:#666">Carbs</div></div>
+      <div style="background:#f9f6ef;border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:#e07850">${tot.f}g</div><div style="font-size:.7rem;color:#666">Fat</div></div>
+    </div>
+    ${selPlan.meals.map(m=>{
+      const mt=mealTotal(m.rows);
+      return `<h3 style="font-family:Arial,sans-serif;font-size:.95rem;margin:16px 0 8px;color:#1a1a1a">${m.time}</h3>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:4px">
+        <thead><tr style="background:#1a1a1a">
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:left;font-family:Arial,sans-serif">FOOD</th>
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:left;font-family:Arial,sans-serif">QUANTITY</th>
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:right;font-family:Arial,sans-serif">KCAL</th>
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:right;font-family:Arial,sans-serif">PROTEIN</th>
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:right;font-family:Arial,sans-serif">CARBS</th>
+          <th style="color:#fff;font-size:.7rem;padding:6px 8px;text-align:right;font-family:Arial,sans-serif">FAT</th>
+        </tr></thead>
+        <tbody>
+          ${m.rows.map(r=>`<tr><td style="padding:6px 8px;border-bottom:1px solid #eee;font-size:.82rem">${r.food}</td><td style="padding:6px 8px;border-bottom:1px solid #eee;font-size:.78rem;color:#555">${r.qty}</td><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-size:.82rem">${r.cal}</td><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-size:.82rem;color:#22a050">${r.p}g</td><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-size:.82rem">${r.c}g</td><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-size:.82rem">${r.f}g</td></tr>`).join('')}
+          <tr style="background:#f9f6ef;font-weight:700"><td colspan="2" style="padding:6px 8px;font-size:.78rem;font-family:Arial,sans-serif">MEAL TOTAL</td><td style="padding:6px 8px;text-align:right;font-size:.82rem;color:#D4942A">${mt.cal}</td><td style="padding:6px 8px;text-align:right;font-size:.82rem;color:#22a050">${mt.p}g</td><td style="padding:6px 8px;text-align:right;font-size:.82rem">${mt.c}g</td><td style="padding:6px 8px;text-align:right;font-size:.82rem">${mt.f}g</td></tr>
+        </tbody>
+      </table>`;
+    }).join('')}
+    <h3 style="font-family:Arial,sans-serif;font-size:.95rem;margin:20px 0 8px;color:#1a1a1a">🛒 Shopping List</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      ${[...new Set(selPlan.meals.flatMap(m=>m.rows.map(r=>r.food)))].map(f=>`<div style="background:#f9f6ef;border:1px solid #ddd;border-radius:4px;padding:6px 8px;font-size:.78rem">☐ ${f}</div>`).join('')}
+    </div>`;
+  document.getElementById('printContent').innerHTML=html;
+  document.getElementById('printModal').style.display='block';
+}
+function closePrint(){document.getElementById('printModal').style.display='none';}
+
+// ══════════════════════════════════════
+//   FIREBASE INTEGRATION (optional)
+// ══════════════════════════════════════
+async function loadDietAdmin(){
+  try{
+    if(typeof firebase==='undefined')return;
+    const snap=await firebase.database().ref('dietAdmin').once('value');
+    const v=snap.val();if(!v)return;
+    if(v.tip){
+      document.getElementById('tipText').textContent=v.tip;
+      if(v.tipCoach) document.getElementById('tipText').textContent+=` ${v.tipCoach}`;
+    }
+    if(v.featured){
+      // Auto-select featured plan
+      selDPlan(v.featured);
+    }
+  }catch(e){console.warn('Diet admin load:',e);}
+}
+
+// ══════════════════════════════════════
+//   INIT
+// ══════════════════════════════════════
+renderTip();
+initGoalGrid();
+loadDietAdmin();
+</script>
+</body>
+</html>

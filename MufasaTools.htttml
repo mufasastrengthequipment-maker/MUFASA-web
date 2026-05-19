@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUFASA — Fitness Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#D4942A;--gl:#F0B84A;--gd:#A8741F;
+  --gdim:rgba(212,148,42,.2);--gfaint:rgba(212,148,42,.06);
+  --bg:#050403;--s1:#0C0A08;--s2:#121008;
+  --card:#18150F;--card2:#1F1B12;
+  --b1:rgba(212,148,42,.13);--b2:rgba(212,148,42,.32);
+  --w:#F4EFE4;--grey:#A09890;--dim:#7A7570;
+  --r:6px;--r2:12px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* ── HEADER ── */
+.tools-header{
+  padding:28px 5vw 0;
+  max-width:860px;
+  margin:0 auto;
+}
+.tools-tag{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;font-weight:700;
+  letter-spacing:.3em;text-transform:uppercase;
+  color:var(--g);margin-bottom:6px;
+}
+.tools-title{
+  font-family:'Anton',sans-serif;
+  font-size:clamp(2rem,6vw,3rem);
+  line-height:1;color:var(--w);margin-bottom:6px;
+}
+.tools-sub{
+  font-size:.87rem;color:var(--grey);
+  margin-bottom:24px;line-height:1.55;
+}
+
+/* ── TOOL LIST ── */
+.tlist{
+  display:flex;flex-direction:column;
+  gap:8px;
+  padding:0 5vw 40px;
+  max-width:860px;
+  margin:0 auto;
+}
+
+/* ── EACH TOOL ITEM ── */
+.titem{
+  background:var(--card);
+  border:1px solid var(--b1);
+  border-radius:var(--r2);
+  overflow:hidden;
+  transition:border-color .3s;
+}
+.titem.open{border-color:var(--b2);}
+
+.thd{
+  display:flex;align-items:center;gap:12px;
+  padding:15px 18px;cursor:pointer;
+  transition:background .2s;
+  user-select:none;
+}
+.thd:hover{background:var(--gfaint);}
+.thd-ic{font-size:1.25rem;flex-shrink:0;line-height:1;}
+.thd-title{
+  flex:1;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1rem;font-weight:700;
+  letter-spacing:.03em;color:var(--w);
+}
+.tarr{color:var(--dim);font-size:1rem;transition:transform .3s,color .3s;line-height:1;}
+.titem.open .tarr{transform:rotate(90deg);color:var(--g);}
+
+.tbody{max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1);}
+.titem.open .tbody{max-height:1400px;}
+.tcont{padding:4px 18px 18px;}
+
+/* ── FORM ELEMENTS ── */
+.al{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);display:block;margin-bottom:3px;margin-top:8px;
+}
+.al:first-child{margin-top:0;}
+.ti{
+  width:100%;background:var(--s1);
+  border:1px solid var(--b1);border-radius:var(--r);
+  color:var(--w);padding:9px 12px;
+  font-family:'Barlow',sans-serif;font-size:.85rem;
+  outline:none;transition:border-color .2s;display:block;
+}
+.ti:focus{border-color:var(--g);}
+.ts{
+  width:100%;background:var(--s1);
+  border:1px solid var(--b1);border-radius:var(--r);
+  color:var(--w);padding:9px 12px;
+  font-family:'Barlow',sans-serif;font-size:.85rem;
+  outline:none;cursor:pointer;display:block;
+}
+.btn-g{
+  width:100%;margin-top:10px;
+  background:linear-gradient(135deg,var(--gd),var(--gl));
+  border:none;color:var(--bg);
+  padding:11px;border-radius:var(--r);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.88rem;font-weight:700;
+  letter-spacing:.12em;cursor:pointer;
+  transition:opacity .2s;
+}
+.btn-g:hover{opacity:.88;}
+
+/* ── RESULT BOX ── */
+.tres{
+  background:var(--gfaint);border:1px solid var(--b1);
+  border-radius:var(--r);padding:13px 14px;
+  margin-top:10px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.95rem;font-weight:600;color:var(--gl);
+  line-height:1.65;display:none;
+}
+.tres.show{display:block;}
+.tres small{font-family:'Barlow',sans-serif;font-weight:400;}
+
+/* ── REST TIMER ── */
+.rest-timer-display{
+  font-family:'Anton',sans-serif;
+  font-size:3.8rem;color:var(--gl);
+  text-align:center;letter-spacing:.05em;
+  line-height:1;padding:12px 0 4px;
+}
+.rest-timer-label{
+  text-align:center;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;letter-spacing:.2em;
+  color:var(--dim);margin-bottom:14px;
+  text-transform:uppercase;
+}
+.rest-timer-btns{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:7px;margin-bottom:10px;
+}
+.rtbtn{
+  background:var(--s2);border:1px solid var(--b1);
+  color:var(--grey);padding:8px;border-radius:var(--r);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:.06em;
+}
+.rtbtn:hover,.rtbtn.sel{background:var(--gdim);border-color:var(--b2);color:var(--gl);}
+.rt-ctrl{display:flex;gap:8px;margin-top:4px;}
+.rt-start{
+  flex:1;background:linear-gradient(135deg,var(--gd),var(--gl));
+  border:none;color:var(--bg);padding:11px;border-radius:var(--r);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:.1em;
+}
+.rt-reset{
+  background:none;border:1px solid var(--b1);color:var(--grey);
+  padding:11px 14px;border-radius:var(--r);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.88rem;cursor:pointer;transition:all .2s;
+}
+.rt-reset:hover{border-color:var(--b2);color:var(--w);}
+
+/* ── PLATE VISUAL ── */
+.plate-result{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center;}
+.plate{
+  border-radius:4px;padding:5px 11px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:.82rem;color:#fff;
+  display:inline-flex;align-items:center;
+}
+
+/* ── OVERLOAD LOG ── */
+.ol-log{
+  display:flex;flex-direction:column;gap:6px;
+  margin-top:10px;max-height:200px;overflow-y:auto;
+}
+.ol-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--s2);border-radius:var(--r);
+  padding:7px 10px;font-size:.83rem;
+}
+.ol-wk{font-family:'Barlow Condensed',sans-serif;color:var(--dim);font-size:.72rem;min-width:52px;}
+.ol-ex{flex:1;font-size:.78rem;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ol-wt{font-family:'Anton',sans-serif;color:var(--gl);font-size:.95rem;}
+.ol-delta{font-size:.72rem;margin-left:4px;}
+.ol-delta.up{color:#7ec8a0;}.ol-delta.dn{color:#e07850;}
+.ol-clear{
+  background:none;border:1px solid var(--b1);
+  color:var(--dim);font-size:.72rem;padding:4px 8px;
+  border-radius:var(--r);cursor:pointer;margin-top:6px;
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;
+}
+.ol-clear:hover{border-color:var(--b2);color:var(--grey);}
+
+/* ── DB COST GRID ── */
+.db-result-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:8px;margin-top:10px;
+}
+.db-rcard{
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r);padding:10px 12px;text-align:center;
+}
+.db-rkg{font-family:'Anton',sans-serif;font-size:1.15rem;color:var(--gl);}
+.db-rtype{font-size:.7rem;color:var(--dim);margin-top:1px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;}
+.db-rprice{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;color:var(--g);margin-top:4px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="tools-header">
+  <div class="tools-tag">Train Smarter</div>
+  <div class="tools-title">FITNESS TOOLS</div>
+  <div class="tools-sub">Tap any tool to expand. 14 calculators built for your training.</div>
+</div>
+
+<div class="tlist" id="toolsList"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  TOOLS CONFIG
+// ══════════════════════════════════════════════
+const TOOLS_CFG = [
+  {
+    id:'bmi', icon:'⚖️', title:'BMI Calculator',
+    html:`
+      <label class="al">Weight (kg)</label>
+      <input class="ti" id="t-bw" type="number" placeholder="75" inputmode="decimal">
+      <label class="al">Height (cm)</label>
+      <input class="ti" id="t-bh" type="number" placeholder="175" inputmode="decimal">
+      <button class="btn-g" onclick="calcBMI()">CALCULATE</button>
+      <div class="tres" id="t-bmi"></div>`
+  },
+  {
+    id:'cal', icon:'🔥', title:'Daily Calories (TDEE)',
+    html:`
+      <label class="al">Weight (kg)</label><input class="ti" id="t-cw" type="number" placeholder="75" inputmode="decimal">
+      <label class="al">Height (cm)</label><input class="ti" id="t-ch" type="number" placeholder="175" inputmode="decimal">
+      <label class="al">Age</label><input class="ti" id="t-ca" type="number" placeholder="28" inputmode="numeric">
+      <label class="al">Gender</label>
+      <select class="ts" id="t-cg"><option value="m">Male</option><option value="f">Female</option></select>
+      <label class="al">Activity Level</label>
+      <select class="ts" id="t-cl">
+        <option value="1.2">Sedentary (desk job, no gym)</option>
+        <option value="1.375">Light (1–3x/week)</option>
+        <option value="1.55" selected>Moderate (3–5x/week)</option>
+        <option value="1.725">Very Active (6–7x/week)</option>
+      </select>
+      <button class="btn-g" onclick="calcTDEE()">CALCULATE</button>
+      <div class="tres" id="t-cal"></div>`
+  },
+  {
+    id:'macro', icon:'🥩', title:'Macros Calculator',
+    html:`
+      <label class="al">Body Weight (kg)</label><input class="ti" id="t-mw" type="number" placeholder="75" inputmode="decimal">
+      <label class="al">Goal</label>
+      <select class="ts" id="t-mg">
+        <option value="cut">Cut (Fat Loss)</option>
+        <option value="maint">Maintenance</option>
+        <option value="bulk">Bulk (Muscle Gain)</option>
+      </select>
+      <label class="al">Activity</label>
+      <select class="ts" id="t-ma">
+        <option value="1.2">Sedentary</option>
+        <option value="1.375">Light</option>
+        <option value="1.55" selected>Moderate</option>
+        <option value="1.725">Very Active</option>
+      </select>
+      <button class="btn-g" onclick="calcMacros()">CALCULATE</button>
+      <div class="tres" id="t-macro"></div>`
+  },
+  {
+    id:'rm', icon:'💪', title:'1-Rep Max Estimator',
+    html:`
+      <label class="al">Weight Lifted (kg)</label><input class="ti" id="t-rw" type="number" placeholder="20" inputmode="decimal">
+      <label class="al">Reps Completed</label><input class="ti" id="t-rr" type="number" placeholder="8" inputmode="numeric">
+      <button class="btn-g" onclick="calc1RM()">CALCULATE</button>
+      <div class="tres" id="t-rm"></div>`
+  },
+  {
+    id:'water', icon:'💧', title:'Daily Water Intake',
+    html:`
+      <label class="al">Body Weight (kg)</label><input class="ti" id="t-ww" type="number" placeholder="75" inputmode="decimal">
+      <label class="al">Activity Level</label>
+      <select class="ts" id="t-wa">
+        <option value="30">Light (30ml/kg)</option>
+        <option value="35" selected>Moderate (35ml/kg)</option>
+        <option value="40">Active (40ml/kg)</option>
+      </select>
+      <button class="btn-g" onclick="calcWater()">CALCULATE</button>
+      <div class="tres" id="t-water"></div>`
+  },
+  {
+    id:'bf', icon:'📏', title:'Body Fat % (Tape Method)',
+    html:`
+      <label class="al">Gender</label>
+      <select class="ts" id="t-bg" onchange="toggleHip()"><option value="m">Male</option><option value="f">Female</option></select>
+      <label class="al">Waist (cm)</label><input class="ti" id="t-bfwaist" type="number" placeholder="85" inputmode="decimal">
+      <label class="al">Neck (cm)</label><input class="ti" id="t-bfneck" type="number" placeholder="38" inputmode="decimal">
+      <label class="al">Height (cm)</label><input class="ti" id="t-bfh" type="number" placeholder="175" inputmode="decimal">
+      <label class="al" id="hip-lbl" style="display:none">Hip (cm — women only)</label>
+      <input class="ti" id="t-bfhip" type="number" placeholder="95" style="display:none" inputmode="decimal">
+      <button class="btn-g" onclick="calcBF()">CALCULATE</button>
+      <div class="tres" id="t-bf"></div>`
+  },
+  {
+    id:'ideal', icon:'📐', title:'Ideal Body Measurements',
+    html:`
+      <label class="al">Height (cm)</label><input class="ti" id="t-ih" type="number" placeholder="175" inputmode="decimal">
+      <label class="al">Wrist circumference (cm)</label><input class="ti" id="t-iw" type="number" placeholder="17" inputmode="decimal">
+      <button class="btn-g" onclick="calcIdeal()">CALCULATE</button>
+      <div class="tres" id="t-ideal"></div>`
+  },
+  {
+    id:'vol', icon:'📊', title:'Workout Volume Load',
+    html:`
+      <label class="al">Weight per DB (kg)</label><input class="ti" id="t-vw" type="number" placeholder="20" inputmode="decimal">
+      <label class="al">Sets</label><input class="ti" id="t-vs" type="number" placeholder="4" inputmode="numeric">
+      <label class="al">Reps per Set</label><input class="ti" id="t-vr" type="number" placeholder="8" inputmode="numeric">
+      <label class="al">Number of Exercises</label><input class="ti" id="t-ve" type="number" placeholder="5" inputmode="numeric">
+      <button class="btn-g" onclick="calcVolume()">CALCULATE</button>
+      <div class="tres" id="t-vol"></div>`
+  },
+  {
+    id:'rest', icon:'⏱️', title:'Rest Timer',
+    html:`
+      <div class="rest-timer-display" id="rt-display">01:30</div>
+      <div class="rest-timer-label">REST BETWEEN SETS</div>
+      <div class="rest-timer-btns">
+        <button class="rtbtn" onclick="setRestTimer(30,this)">30s</button>
+        <button class="rtbtn" onclick="setRestTimer(60,this)">1 min</button>
+        <button class="rtbtn sel" onclick="setRestTimer(90,this)">1:30</button>
+        <button class="rtbtn" onclick="setRestTimer(120,this)">2 min</button>
+        <button class="rtbtn" onclick="setRestTimer(180,this)">3 min</button>
+        <button class="rtbtn" onclick="setRestTimer(300,this)">5 min</button>
+      </div>
+      <div class="rt-ctrl">
+        <button class="rt-start" id="rt-btn" onclick="toggleRestTimer()">▶ START</button>
+        <button class="rt-reset" onclick="resetRestTimer()">↺ RESET</button>
+      </div>`
+  },
+  {
+    id:'plate', icon:'🏋️', title:'Plate Load Calculator',
+    html:`
+      <label class="al">Target Weight (kg total)</label>
+      <input class="ti" id="t-pw" type="number" placeholder="80" inputmode="decimal">
+      <label class="al">Barbell / Bar Weight (kg)</label>
+      <select class="ts" id="t-pb">
+        <option value="20">Standard Barbell — 20kg</option>
+        <option value="15">Women's Bar — 15kg</option>
+        <option value="10">EZ Bar — 10kg</option>
+        <option value="0">Dumbbells / No bar</option>
+      </select>
+      <button class="btn-g" onclick="calcPlates()">CALCULATE</button>
+      <div class="tres" id="t-plate"></div>
+      <div class="plate-result" id="t-plates-visual"></div>`
+  },
+  {
+    id:'freq', icon:'📅', title:'Workout Frequency Planner',
+    html:`
+      <label class="al">Your Primary Goal</label>
+      <select class="ts" id="t-fg">
+        <option value="strength">Build Strength</option>
+        <option value="hypertrophy">Build Muscle (Hypertrophy)</option>
+        <option value="fatloss">Fat Loss</option>
+        <option value="endurance">Endurance & Fitness</option>
+        <option value="maintain">Maintain & Stay Active</option>
+      </select>
+      <label class="al">Available Days per Week</label>
+      <select class="ts" id="t-fd">
+        <option value="2">2 days</option>
+        <option value="3" selected>3 days</option>
+        <option value="4">4 days</option>
+        <option value="5">5 days</option>
+        <option value="6">6 days</option>
+      </select>
+      <label class="al">Experience Level</label>
+      <select class="ts" id="t-fl">
+        <option value="beginner">Beginner (0–1 year)</option>
+        <option value="intermediate" selected>Intermediate (1–3 years)</option>
+        <option value="advanced">Advanced (3+ years)</option>
+      </select>
+      <button class="btn-g" onclick="calcFreq()">GET MY PLAN</button>
+      <div class="tres" id="t-freq"></div>`
+  },
+  {
+    id:'overload', icon:'🔄', title:'Progressive Overload Tracker',
+    html:`
+      <label class="al">Exercise Name</label>
+      <input class="ti" id="t-oex" placeholder="e.g. Dumbbell Row">
+      <label class="al">Weight Used (kg) — This Session</label>
+      <input class="ti" id="t-owt" type="number" placeholder="22" inputmode="decimal">
+      <button class="btn-g" onclick="logOverload()">LOG SESSION</button>
+      <div class="ol-log" id="t-ol-log"></div>
+      <button class="ol-clear" onclick="clearOLLog()" style="display:none" id="t-ol-clear">CLEAR LOG</button>`
+  },
+  {
+    id:'sleep', icon:'💤', title:'Sleep & Recovery Score',
+    html:`
+      <label class="al">Hours Slept Last Night</label>
+      <input class="ti" id="t-sh" type="number" placeholder="7" inputmode="decimal">
+      <label class="al">Sleep Quality</label>
+      <select class="ts" id="t-sq">
+        <option value="3">Deep & Uninterrupted</option>
+        <option value="2" selected>Moderate — woke once or twice</option>
+        <option value="1">Light / Restless</option>
+      </select>
+      <label class="al">Days Since Last Rest Day</label>
+      <input class="ti" id="t-sr" type="number" placeholder="2" inputmode="numeric">
+      <label class="al">Muscle Soreness Today</label>
+      <select class="ts" id="t-ss">
+        <option value="0">None — feeling fresh</option>
+        <option value="1" selected>Mild soreness</option>
+        <option value="2">Moderate — stiff but okay</option>
+        <option value="3">Heavy — very sore</option>
+      </select>
+      <button class="btn-g" onclick="calcSleep()">GET RECOVERY SCORE</button>
+      <div class="tres" id="t-sleep"></div>`
+  },
+  {
+    id:'dbcost', icon:'🦁', title:'Dumbbell Set Cost Estimator',
+    html:`
+      <label class="al">Starting Weight (kg)</label>
+      <select class="ts" id="t-dbs">
+        <option value="2">2KG</option><option value="4">4KG</option>
+        <option value="6">6KG</option><option value="8" selected>8KG</option>
+        <option value="10">10KG</option>
+      </select>
+      <label class="al">Up to Weight (kg)</label>
+      <select class="ts" id="t-dbe">
+        <option value="15">15KG</option><option value="20">20KG</option>
+        <option value="25" selected>25KG</option><option value="30">30KG</option>
+        <option value="35">35KG</option>
+      </select>
+      <label class="al">Buy as</label>
+      <select class="ts" id="t-dbt">
+        <option value="pair">Pairs</option>
+        <option value="single">Singles</option>
+      </select>
+      <button class="btn-g" onclick="calcDBCost()">ESTIMATE COST</button>
+      <div class="db-result-grid" id="t-dbgrid"></div>
+      <div class="tres" id="t-dbcost"></div>`
+  },
+];
+
+// ══ RENDER ══
+function initTools() {
+  document.getElementById('toolsList').innerHTML = TOOLS_CFG.map(t => `
+    <div class="titem" id="ti-${t.id}">
+      <div class="thd" onclick="toggleTool('${t.id}')">
+        <span class="thd-ic">${t.icon}</span>
+        <span class="thd-title">${t.title}</span>
+        <span class="tarr">›</span>
+      </div>
+      <div class="tbody">
+        <div class="tcont">${t.html}</div>
+      </div>
+    </div>`).join('');
+  renderOLLog();
+}
+
+function toggleTool(id) {
+  document.getElementById('ti-' + id).classList.toggle('open');
+}
+
+function showRes(id, html) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = html;
+  el.classList.add('show');
+}
+
+// ══ BMI ══
+function calcBMI() {
+  const w = +document.getElementById('t-bw').value;
+  const h = +document.getElementById('t-bh').value / 100;
+  if (!w || !h) return;
+  const bmi = (w / (h * h)).toFixed(1);
+  const cat = bmi < 18.5 ? '⚠️ Underweight' : bmi < 25 ? '✅ Normal' : bmi < 30 ? '⚠️ Overweight' : '🔴 Obese';
+  const tip = bmi < 18.5 ? 'Caloric surplus + strength training to build mass.' :
+              bmi < 25   ? 'Great range. Maintain with consistent training and nutrition.' :
+              bmi < 30   ? 'Aim for a 300–500 kcal deficit with 3–5x/week training.' :
+                           'Focus on sustainable deficit + daily movement. Consult a doctor.';
+  showRes('t-bmi', `BMI: <strong>${bmi}</strong> — ${cat}<br><small style="color:var(--grey)">${tip}</small>`);
+}
+
+// ══ TDEE ══
+function calcTDEE() {
+  const w = +document.getElementById('t-cw').value;
+  const h = +document.getElementById('t-ch').value;
+  const a = +document.getElementById('t-ca').value;
+  const g = document.getElementById('t-cg').value;
+  const act = +document.getElementById('t-cl').value;
+  if (!w || !h || !a) return;
+  const bmr = g === 'm' ? 88.36 + 13.4*w + 4.8*h - 5.7*a : 447.6 + 9.25*w + 3.1*h - 4.3*a;
+  const tdee = Math.round(bmr * act);
+  showRes('t-cal', `Maintenance: <strong>${tdee.toLocaleString()} kcal/day</strong><br>
+    <small style="color:var(--grey)">Cut: ${(tdee-400).toLocaleString()} kcal &nbsp;|&nbsp; Bulk: ${(tdee+300).toLocaleString()} kcal</small>`);
+}
+
+// ══ MACROS ══
+function calcMacros() {
+  const w = +document.getElementById('t-mw').value;
+  const goal = document.getElementById('t-mg').value;
+  const act = +document.getElementById('t-ma').value;
+  if (!w) return;
+  const bmr = 88.36 + 13.4*w + 4.8*175 - 5.7*25;
+  const tdee = Math.round(bmr * act);
+  const cal = goal === 'cut' ? tdee - 400 : goal === 'bulk' ? tdee + 300 : tdee;
+  const protein = Math.round(w * (goal === 'cut' ? 2.4 : goal === 'bulk' ? 2.0 : 1.8));
+  const fat = Math.round(w * 1.0);
+  const carbs = Math.max(0, Math.round((cal - protein*4 - fat*9) / 4));
+  showRes('t-macro', `Target: <strong>${cal.toLocaleString()} kcal</strong><br>
+    <small style="color:var(--grey)">Protein: <span style="color:#7ec8a0">${protein}g</span> &nbsp;|&nbsp;
+    Carbs: <span style="color:var(--gl)">${carbs}g</span> &nbsp;|&nbsp;
+    Fat: <span style="color:#e07850">${fat}g</span></small>`);
+}
+
+// ══ 1RM ══
+function calc1RM() {
+  const w = +document.getElementById('t-rw').value;
+  const r = +document.getElementById('t-rr').value;
+  if (!w || !r) return;
+  const rm = Math.round(w * (1 + r/30));
+  showRes('t-rm', `Estimated 1RM: <strong>${rm}kg</strong><br>
+    <small style="color:var(--grey)">90%: ${Math.round(rm*.9)}kg &nbsp;|&nbsp; 80%: ${Math.round(rm*.8)}kg &nbsp;|&nbsp; 70%: ${Math.round(rm*.7)}kg &nbsp;|&nbsp; 60%: ${Math.round(rm*.6)}kg</small>`);
+}
+
+// ══ WATER ══
+function calcWater() {
+  const w = +document.getElementById('t-ww').value;
+  const ml = +document.getElementById('t-wa').value;
+  if (!w) return;
+  const total = Math.round(w * ml);
+  showRes('t-water', `<strong>${(total/1000).toFixed(1)}L / day</strong> (${Math.round(total/250)} glasses)<br>
+    <small style="color:var(--grey)">Spread evenly throughout the day. Add 500ml on training days.</small>`);
+}
+
+// ══ BODY FAT ══
+function toggleHip() {
+  const f = document.getElementById('t-bg').value === 'f';
+  document.getElementById('hip-lbl').style.display = f ? 'block' : 'none';
+  document.getElementById('t-bfhip').style.display = f ? 'block' : 'none';
+}
+function calcBF() {
+  const g = document.getElementById('t-bg').value;
+  const waist = +document.getElementById('t-bfwaist').value;
+  const neck  = +document.getElementById('t-bfneck').value;
+  const h     = +document.getElementById('t-bfh').value;
+  const hip   = +document.getElementById('t-bfhip').value;
+  if (!waist || !neck || !h) return;
+  let bf;
+  if (g === 'm') {
+    bf = 86.01*Math.log10(waist-neck) - 70.041*Math.log10(h) + 36.76;
+  } else {
+    if (!hip) return;
+    bf = 163.205*Math.log10(waist+hip-neck) - 97.684*Math.log10(h) - 78.387;
+  }
+  bf = Math.max(3, Math.min(60, +bf.toFixed(1)));
+  const cat = g === 'm'
+    ? bf<6?'Essential Fat':bf<14?'✅ Athletic':bf<18?'✅ Fit':bf<25?'Average':'⚠️ High'
+    : bf<14?'Essential Fat':bf<21?'✅ Athletic':bf<25?'✅ Fit':bf<32?'Average':'⚠️ High';
+  showRes('t-bf', `Body Fat: <strong>${bf}%</strong> — ${cat}`);
+}
+
+// ══ IDEAL MEASUREMENTS ══
+function calcIdeal() {
+  const h = +document.getElementById('t-ih').value;
+  const w = +document.getElementById('t-iw').value;
+  if (!h || !w) return;
+  const chest = Math.round(w*6.5 + h*0.19);
+  const waist = Math.round(chest*0.70);
+  const hips  = Math.round(chest*0.85);
+  const bicep = Math.round(w*2.55);
+  const neck  = Math.round(w*2.29);
+  const thigh = Math.round(w*3.30);
+  const calf  = Math.round(w*1.93);
+  showRes('t-ideal', `Chest: <strong>${chest}cm</strong> &nbsp;|&nbsp; Waist: <strong>${waist}cm</strong> &nbsp;|&nbsp; Hips: <strong>${hips}cm</strong><br>
+    Bicep: <strong>${bicep}cm</strong> &nbsp;|&nbsp; Neck: <strong>${neck}cm</strong> &nbsp;|&nbsp; Thigh: <strong>${thigh}cm</strong> &nbsp;|&nbsp; Calf: <strong>${calf}cm</strong><br>
+    <small style="color:var(--grey)">Targets based on your skeletal frame. For natural development.</small>`);
+}
+
+// ══ VOLUME ══
+function calcVolume() {
+  const w = +document.getElementById('t-vw').value;
+  const s = +document.getElementById('t-vs').value;
+  const r = +document.getElementById('t-vr').value;
+  const e = +document.getElementById('t-ve').value;
+  if (!w||!s||!r||!e) return;
+  const vol = w*2*s*r*e;
+  const rating = vol<5000?'Low — consider adding sets or weight':vol<12000?'✅ Solid session volume':vol<20000?'💪 High — great stimulus':'🔥 Very high — ensure recovery';
+  showRes('t-vol', `Total Volume: <strong>${vol.toLocaleString()}kg</strong><br><small style="color:var(--grey)">${rating}</small>`);
+}
+
+// ══ REST TIMER ══
+let rtTotal=90, rtRemaining=90, rtInterval=null, rtRunning=false;
+function setRestTimer(s, btn) {
+  resetRestTimer();
+  rtTotal = s; rtRemaining = s;
+  document.querySelectorAll('.rtbtn').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  updateRTDisplay();
+}
+function updateRTDisplay() {
+  const el = document.getElementById('rt-display');
+  if(!el) return;
+  const m = Math.floor(rtRemaining/60).toString().padStart(2,'0');
+  const s = (rtRemaining%60).toString().padStart(2,'0');
+  el.textContent = m+':'+s;
+}
+function toggleRestTimer() {
+  if(rtRunning) {
+    clearInterval(rtInterval); rtRunning=false;
+    document.getElementById('rt-btn').textContent='▶ RESUME';
+  } else {
+    rtRunning=true;
+    document.getElementById('rt-btn').textContent='⏸ PAUSE';
+    rtInterval=setInterval(()=>{
+      if(rtRemaining<=0){
+        clearInterval(rtInterval); rtRunning=false;
+        document.getElementById('rt-btn').textContent='▶ START';
+        document.getElementById('rt-display').textContent='✅ DONE!';
+        if('vibrate' in navigator) navigator.vibrate([300,100,300]);
+        return;
+      }
+      rtRemaining--;
+      updateRTDisplay();
+    },1000);
+  }
+}
+function resetRestTimer() {
+  clearInterval(rtInterval); rtRunning=false; rtRemaining=rtTotal;
+  updateRTDisplay();
+  const btn=document.getElementById('rt-btn');
+  if(btn) btn.textContent='▶ START';
+}
+
+// ══ PLATES ══
+function calcPlates() {
+  const target = +document.getElementById('t-pw').value;
+  const bar    = +document.getElementById('t-pb').value;
+  if(!target) return;
+  const perSide = (target - bar) / 2;
+  if(perSide < 0){ showRes('t-plate',`⚠️ Target is less than bar weight (${bar}kg).`); document.getElementById('t-plates-visual').innerHTML=''; return; }
+  const PLATES=[25,20,15,10,5,2.5,1.25];
+  const COLORS={25:'#e53935',20:'#1565c0',15:'#f9a825',10:'#2e7d32',5:'#6a1b9a',2.5:'#37474f',1.25:'#795548'};
+  let rem=perSide, used=[];
+  PLATES.forEach(p=>{ while(rem>=p-0.001){used.push(p);rem=Math.round((rem-p)*1000)/1000;} });
+  const totalLoaded = bar + used.reduce((s,p)=>s+p,0)*2;
+  showRes('t-plate',`Load <strong>${used.length?used.join('kg + ')+'kg':'(bar only)'}</strong> per side<br>
+    <small style="color:var(--grey)">Total on bar: ${totalLoaded}kg${rem>0.01?` — ⚠️ ${rem}kg can't be made with standard plates`:''}</small>`);
+  document.getElementById('t-plates-visual').innerHTML = used.map(p=>
+    `<span class="plate" style="background:${COLORS[p]||'#444'}">${p}kg</span>`
+  ).join('') || '<span style="color:var(--dim);font-size:.82rem">Bar only</span>';
+}
+
+// ══ FREQUENCY PLANNER ══
+function calcFreq() {
+  const goal = document.getElementById('t-fg').value;
+  const days = +document.getElementById('t-fd').value;
+  const lvl  = document.getElementById('t-fl').value;
+  const plans = {
+    strength:{
+      2:'Full Body A / Full Body B. Heavy compounds 5×5. Focus: Deadlift, Press, Row.',
+      3:'Push / Pull / Legs. 4–6 reps per set, 3–4 min rest. Add weight weekly.',
+      4:'Upper A / Lower A / Upper B / Lower B. Heavy + moderate loads.',
+      5:'Push / Pull / Legs / Upper / Lower. Alternate heavy and volume days.',
+      6:'PPL ×2. Ensure each muscle hit 2x/week. Deload every 4–5 weeks.',
+    },
+    hypertrophy:{
+      2:'Full Body ×2. 3–4 exercises/muscle, 8–12 reps, 60–90s rest.',
+      3:'Push / Pull / Legs. 10–20 sets per muscle/week. Volume is key.',
+      4:'Upper / Lower ×2. 12–20 reps, 60–90s rest. Progressive overload every week.',
+      5:'Chest+Tri / Back+Bi / Legs / Shoulders / Arms. High volume per day.',
+      6:'PPL ×2 or Body Part Split. 15–25 sets/muscle/week maximum.',
+    },
+    fatloss:{
+      2:'Full Body HIIT ×2. 30–45 min circuits. Walk 8,000+ steps daily.',
+      3:'Strength ×2 + HIIT ×1. Keep weights heavy to preserve muscle.',
+      4:'Strength ×3 + HIIT ×1. Walk daily. Sleep 7–9h for fat loss hormones.',
+      5:'Strength ×3 + Cardio ×2 (LISS or HIIT). Prioritise deficit over volume.',
+      6:'Strength ×4 + Cardio ×2. Do not cut calories too aggressively.',
+    },
+    endurance:{
+      2:'Full Body circuit ×2. High reps (15–20), 30s rest. Jump rope daily.',
+      3:'Circuit A / LISS Cardio / Circuit B. Build aerobic base first.',
+      4:'Strength circuits ×2 + Cardio ×2. Increase duration 10% per week.',
+      5:'Circuits ×3 + Cardio ×2. Add intervals once base fitness improves.',
+      6:'Strength ×3 + Cardio ×3. Monitor for overtraining — rest is progress.',
+    },
+    maintain:{
+      2:'Full Body ×2. Moderate intensity. Enjoy the consistency.',
+      3:'Push / Pull / Legs. Keep weights steady. Mix in new exercises.',
+      4:'Upper / Lower ×2. Add hobbies — sport, hiking, swimming.',
+      5:'Flexible split. 3 strength + 2 active hobby sessions.',
+      6:'Active lifestyle split. Training should not feel like a chore.',
+    }
+  };
+  const levelNote = lvl==='beginner'?'🌱 Beginner tip: Full body 3x/week gives the fastest results at your stage.':
+                    lvl==='advanced'?'🔥 Advanced: Periodise and deload every 4–6 weeks.':'';
+  const plan = plans[goal][days]||'Solid approach — adjust based on how your body responds.';
+  showRes('t-freq',`<strong>${days}x/week — ${goal.charAt(0).toUpperCase()+goal.slice(1)}:</strong><br>${plan}${levelNote?`<br><small style="color:var(--dim)">${levelNote}</small>`:''}`);
+}
+
+// ══ OVERLOAD TRACKER ══
+let olData={};
+function logOverload(){
+  const ex=document.getElementById('t-oex').value.trim();
+  const wt=+document.getElementById('t-owt').value;
+  if(!ex||!wt) return;
+  if(!olData[ex]) olData[ex]=[];
+  olData[ex].push({wt,date:new Date().toLocaleDateString('en-KE',{day:'numeric',month:'short'})});
+  try{localStorage.setItem('muf_ol',JSON.stringify(olData));}catch(e){}
+  document.getElementById('t-owt').value='';
+  renderOLLog();
+}
+function clearOLLog(){
+  olData={};
+  try{localStorage.removeItem('muf_ol');}catch(e){}
+  renderOLLog();
+}
+function renderOLLog(){
+  try{const s=localStorage.getItem('muf_ol');if(s)olData=JSON.parse(s);}catch(e){}
+  const box=document.getElementById('t-ol-log');
+  const clrBtn=document.getElementById('t-ol-clear');
+  if(!box) return;
+  const allEntries=Object.entries(olData).flatMap(([ex,arr])=>arr.map(e=>({...e,ex})));
+  allEntries.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const last10=allEntries.slice(0,10);
+  if(!last10.length){box.innerHTML='';if(clrBtn)clrBtn.style.display='none';return;}
+  if(clrBtn)clrBtn.style.display='block';
+  box.innerHTML=last10.map((e,i)=>{
+    const prev=last10[i+1];
+    const delta=prev&&prev.ex===e.ex?e.wt-prev.wt:null;
+    const dHtml=delta!==null?`<span class="ol-delta ${delta>=0?'up':'dn'}">${delta>=0?'▲':'▼'}${Math.abs(delta)}kg</span>`:'';
+    return `<div class="ol-row"><span class="ol-wk">${e.date}</span><span class="ol-ex">${e.ex}</span><span class="ol-wt">${e.wt}kg</span>${dHtml}</div>`;
+  }).join('');
+}
+
+// ══ SLEEP & RECOVERY ══
+function calcSleep(){
+  const hrs=+document.getElementById('t-sh').value;
+  const qual=+document.getElementById('t-sq').value;
+  const rest=+document.getElementById('t-sr').value;
+  const sore=+document.getElementById('t-ss').value;
+  if(!hrs) return;
+  let score=0;
+  score += hrs>=8?30:hrs>=7?24:hrs>=6?15:7;
+  score += qual*10;
+  score += rest<=1?20:rest<=3?15:rest<=5?8:3;
+  score -= sore*8;
+  score = Math.max(5,Math.min(100,score));
+  const status=score>=80?'🟢 READY TO TRAIN HARD':score>=60?'🟡 TRAIN MODERATELY':score>=40?'🟠 LIGHT SESSION ONLY':'🔴 REST DAY RECOMMENDED';
+  const tip=score>=80?'Body is recovered. Push intensity today.':
+             score>=60?'Good to train. Keep weights moderate, focus on form.':
+             score>=40?'Mobility or light pump session. No PRs today.':
+             'Sleep and eat well today. Rest now prevents a week of burnout.';
+  showRes('t-sleep',`Recovery Score: <strong>${score}/100</strong><br>${status}<br><small style="color:var(--grey)">${tip}</small>`);
+}
+
+// ══ DB COST ESTIMATOR ══
+const DEF_P={2:950,4:1750,6:2350,8:2950,10:3550,12:4350,15:5150,20:6550,25:7950,30:9550,35:10950};
+const DEF_S={2:499,4:899,6:1199,8:1499,10:1799,12:2199,15:2599,20:3299,25:3999,30:4799,35:5499};
+const WTS=[2,4,6,8,10,12,15,20,25,30,35];
+function calcDBCost(){
+  const from=+document.getElementById('t-dbs').value;
+  const to  =+document.getElementById('t-dbe').value;
+  const type=document.getElementById('t-dbt').value;
+  if(from>=to){showRes('t-dbcost','⚠️ Start weight must be less than end weight.');document.getElementById('t-dbgrid').innerHTML='';return;}
+  const priceMap=type==='pair'?DEF_P:DEF_S;
+  const range=WTS.filter(kg=>kg>=from&&kg<=to);
+  let total=0;
+  document.getElementById('t-dbgrid').innerHTML=range.map(kg=>{
+    const p=priceMap[kg]||0;total+=p;
+    return `<div class="db-rcard"><div class="db-rkg">${kg}KG</div><div class="db-rtype">${type==='pair'?'PAIR':'SINGLE'}</div><div class="db-rprice">KSH ${p.toLocaleString()}</div></div>`;
+  }).join('');
+  showRes('t-dbcost',`Total for ${range.length} ${type==='pair'?'pairs':'singles'}: <strong>KSH ${total.toLocaleString()}</strong><br>
+    <small style="color:var(--grey)">WhatsApp <a href="https://wa.me/254115228712" style="color:var(--g)">0115 228 712</a> to order your full set. 🦁</small>`);
+}
+
+// ══ INIT ══
+initTools();
+</script>
+</body>
+</html>

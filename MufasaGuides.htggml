@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUFASA — Guides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#D4942A;--gl:#F0B84A;--gd:#A8741F;
+  --gdim:rgba(212,148,42,.2);--gfaint:rgba(212,148,42,.06);
+  --bg:#050403;--s1:#0C0A08;--s2:#121008;
+  --card:#18150F;--card2:#1F1B12;
+  --b1:rgba(212,148,42,.13);--b2:rgba(212,148,42,.32);
+  --w:#F4EFE4;--grey:#A09890;--dim:#7A7570;
+  --r:6px;--r2:12px;--r3:20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* ── PAGE WRAPPER ── */
+.guides-wrap{padding:28px 5vw 60px;max-width:860px;margin:0 auto;}
+
+/* ── HEADER ── */
+.guides-header{margin-bottom:26px;}
+.stag{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+.sh{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,5vw,2.8rem);line-height:1;color:var(--w);margin-bottom:6px;}
+.ssub{font-size:.88rem;color:var(--grey);line-height:1.6;}
+
+/* ── DAILY TIP BANNER ── */
+.tip-banner{
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid var(--b2);
+  border-left:3px solid var(--g);
+  border-radius:var(--r2);
+  padding:14px 18px;
+  margin-bottom:28px;
+  display:flex;align-items:flex-start;gap:12px;
+  animation:tipIn .5s ease both;
+}
+@keyframes tipIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+.tip-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.tip-body{}
+.tip-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--g);margin-bottom:3px;}
+.tip-text{font-size:.86rem;color:var(--w);line-height:1.55;}
+.tip-refresh{background:none;border:none;color:var(--dim);font-size:.75rem;cursor:pointer;margin-top:5px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;padding:0;}
+.tip-refresh:hover{color:var(--g);}
+
+/* ── GOAL SELECTOR ── */
+.goal-bar{
+  display:flex;gap:7px;flex-wrap:wrap;
+  margin-bottom:26px;
+  padding:16px 18px;
+  background:var(--s1);
+  border:1px solid var(--b1);
+  border-radius:var(--r2);
+}
+.goal-bar-label{
+  font-family:'Barlow Condensed',sans-serif;font-size:.72rem;
+  font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--grey);width:100%;margin-bottom:5px;
+}
+.gbtn{
+  background:none;border:1px solid var(--b1);
+  color:var(--grey);padding:7px 16px;
+  border-radius:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.gbtn:hover{border-color:var(--g);color:var(--g);background:var(--gfaint);}
+.gbtn.on{background:var(--g);border-color:var(--g);color:var(--bg);}
+
+/* ── GUIDE CARDS ── */
+.glist{display:flex;flex-direction:column;gap:10px;}
+
+.gitem{
+  background:var(--card);
+  border:1px solid var(--b1);
+  border-radius:var(--r2);
+  overflow:hidden;
+  transition:border-color .3s;
+}
+.gitem.open{border-color:var(--b2);}
+
+/* header row */
+.ghd{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;cursor:pointer;
+  transition:background .2s;
+  user-select:none;
+}
+.ghd:hover{background:var(--gfaint);}
+.ghd-ic{
+  width:44px;height:44px;
+  border-radius:var(--r2);
+  background:var(--gdim);
+  border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.35rem;flex-shrink:0;
+  transition:background .3s;
+}
+.gitem.open .ghd-ic{background:var(--g);}
+.ghd-info{flex:1;}
+.ghd-t{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.05rem;font-weight:700;letter-spacing:.04em;
+  color:var(--w);
+}
+.ghd-s{font-size:.76rem;color:var(--grey);margin-top:3px;}
+.garr{
+  color:var(--grey);font-size:1.1rem;font-weight:700;
+  transition:transform .3s,color .3s;
+  flex-shrink:0;
+}
+.gitem.open .garr{transform:rotate(90deg);color:var(--g);}
+
+/* collapsible body */
+.gbody{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.4,0,.2,1);
+}
+.gitem.open .gbody{max-height:4000px;}
+
+/* inner content */
+.gcont{padding:0 20px 20px;}
+.gcont-divider{height:1px;background:var(--b1);margin-bottom:18px;}
+
+/* sub-topic blocks */
+.gsub{margin-bottom:18px;}
+.gsub:last-child{margin-bottom:0;}
+.gsub-hd{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--g);
+  margin-bottom:9px;
+  display:flex;align-items:center;gap:7px;
+}
+.gsub-hd::before{
+  content:'';width:3px;height:13px;
+  background:var(--g);border-radius:2px;flex-shrink:0;
+}
+.gsub ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;}
+.gsub ul li{
+  font-size:.85rem;color:var(--grey);
+  padding:7px 10px 7px 30px;
+  position:relative;line-height:1.6;
+  background:var(--s1);
+  border-radius:var(--r);
+  border-left:2px solid transparent;
+  transition:border-color .2s,color .2s;
+}
+.gsub ul li:hover{border-left-color:var(--g);color:var(--w);}
+.gsub ul li::before{
+  content:'→';position:absolute;left:10px;
+  color:var(--g);font-size:.8rem;
+}
+
+/* goal badge inside card */
+.goal-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--gdim);border:1px solid var(--b2);
+  border-radius:20px;padding:4px 11px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.68rem;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--gl);
+  margin-bottom:14px;
+}
+
+/* highlight box */
+.ghighlight{
+  background:linear-gradient(135deg,rgba(212,148,42,.08),rgba(212,148,42,.03));
+  border:1px solid var(--b2);
+  border-radius:var(--r2);
+  padding:14px 16px;
+  margin-bottom:18px;
+  font-size:.84rem;color:var(--w);
+  line-height:1.6;
+}
+.ghighlight strong{color:var(--gl);}
+
+/* ── FOOTER NOTE ── */
+.guides-footer{
+  margin-top:32px;
+  padding:16px 18px;
+  background:var(--s1);
+  border:1px solid var(--b1);
+  border-radius:var(--r2);
+  font-size:.78rem;color:var(--dim);
+  line-height:1.6;text-align:center;
+}
+.guides-footer span{color:var(--g);}
+
+/* ── ANIMATIONS ── */
+.fade-in{animation:fadeIn .4s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<div class="guides-wrap">
+
+  <!-- HEADER -->
+  <div class="guides-header fade-in">
+    <div class="stag">Expert Knowledge</div>
+    <h1 class="sh">EXPERT GUIDES</h1>
+    <p class="ssub">Personalised advice. No fluff. Just what works for your goal.</p>
+  </div>
+
+  <!-- DAILY TIP -->
+  <div class="tip-banner fade-in" id="tipBanner">
+    <div class="tip-icon">💡</div>
+    <div class="tip-body">
+      <div class="tip-label">Tip of the Day</div>
+      <div class="tip-text" id="tipText">Loading...</div>
+      <button class="tip-refresh" onclick="nextTip()">↻ Next tip</button>
+    </div>
+  </div>
+
+  <!-- GOAL SELECTOR -->
+  <div class="goal-bar fade-in">
+    <div class="goal-bar-label">Your Goal — select to personalise:</div>
+    <button class="gbtn on" onclick="setGoal('muscle',this)">💪 Muscle Gain</button>
+    <button class="gbtn" onclick="setGoal('fatloss',this)">🔥 Fat Loss</button>
+    <button class="gbtn" onclick="setGoal('maintenance',this)">⚖️ Maintenance</button>
+    <button class="gbtn" onclick="setGoal('beginner',this)">🌱 Complete Beginner</button>
+  </div>
+
+  <!-- GUIDE CARDS -->
+  <div class="glist" id="guideList"></div>
+
+  <!-- FOOTER -->
+  <div class="guides-footer">
+    <span>MUFASA STRENGTH</span> — All advice is based on evidence-backed fitness principles. Results depend on consistency, sleep, and nutrition working together.
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  DAILY TIPS
+// ══════════════════════════════════════════
+const TIPS = [
+  { icon:'💧', text:'Drink 500ml of water before your first meal. Hydration improves performance and reduces hunger.' },
+  { icon:'🥚', text:'Eggs are the most complete protein source available in Kenya. 3 eggs = 18g of quality protein for under KSH 60.' },
+  { icon:'😴', text:'One extra hour of sleep does more for muscle growth than an extra hour in the gym. Prioritise it.' },
+  { icon:'⏱️', text:'Rest 60–90 seconds between sets for hypertrophy. Under 60s burns more calories. Over 2 min builds more strength.' },
+  { icon:'📈', text:'If you hit the top of your rep range with good form, increase weight next session. That is progressive overload.' },
+  { icon:'🍠', text:'Sweet potato is Kenya\'s best pre-workout carb. Slow digesting, cheap, and packed with potassium.' },
+  { icon:'🦵', text:'Never skip legs. Lower body training releases more testosterone than any upper body movement.' },
+  { icon:'🧂', text:'Add a pinch of salt to your water on heavy training days. Electrolytes prevent cramps and fatigue.' },
+  { icon:'🔄', text:'Compound movements first, isolation last. Squats before leg curls. Press before lateral raises.' },
+  { icon:'📓', text:'People who log their workouts progress 30% faster than those who don\'t. Use your phone notes at minimum.' },
+  { icon:'🌅', text:'Morning training raises cortisol naturally with the day — good for fat burning. Evening training suits strength peak.' },
+  { icon:'🫀', text:'10 minutes of skipping rope burns the same calories as 20 minutes of jogging. Cheapest cardio tool available.' },
+  { icon:'🥩', text:'Protein goal simplified: eat your bodyweight in grams per day. 70kg = 70g protein minimum.' },
+  { icon:'🧘', text:'5 minutes of deep breathing after training lowers cortisol and speeds up recovery. Not soft — strategic.' },
+  { icon:'🍳', text:'Ugali + beans + sukuma wiki is one of the most complete muscle-building meals available. No supplements needed.' },
+];
+
+let tipIndex = new Date().getDay() % TIPS.length;
+
+function renderTip() {
+  const t = TIPS[tipIndex];
+  document.getElementById('tipText').textContent = t.text;
+  document.querySelector('.tip-icon').textContent = t.icon;
+}
+
+function nextTip() {
+  tipIndex = (tipIndex + 1) % TIPS.length;
+  renderTip();
+}
+
+// ══════════════════════════════════════════
+//  GOAL STATE
+// ══════════════════════════════════════════
+let currentGoal = 'muscle';
+
+function setGoal(goal, btn) {
+  currentGoal = goal;
+  document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderGuides();
+}
+
+// ══════════════════════════════════════════
+//  GUIDES DATA (personalised by goal)
+// ══════════════════════════════════════════
+const GOAL_LABELS = {
+  muscle:      '💪 Muscle Gain',
+  fatloss:     '🔥 Fat Loss',
+  maintenance: '⚖️ Maintenance',
+  beginner:    '🌱 Complete Beginner',
+};
+
+const GOAL_HIGHLIGHTS = {
+  nutrition: {
+    muscle:      '<strong>Priority:</strong> Eat in a caloric surplus of 200–400 kcal/day. Protein is non-negotiable at 1.6–2g per kg of bodyweight.',
+    fatloss:     '<strong>Priority:</strong> Eat in a 300–500 kcal deficit daily. Keep protein high (1.8–2.2g/kg) to preserve muscle while losing fat.',
+    maintenance: '<strong>Priority:</strong> Match calories to expenditure. Focus on food quality and consistent meal timing over strict tracking.',
+    beginner:    '<strong>Priority:</strong> Don\'t overthink it. Eat mostly whole foods, hit your protein, and avoid liquid calories. Consistency beats perfection.',
+  },
+  recovery: {
+    muscle:      '<strong>Priority:</strong> Sleep 8–9 hours. Growth hormone peaks during deep sleep — this is when your muscles actually repair and grow.',
+    fatloss:     '<strong>Priority:</strong> Sleep deprivation raises ghrelin (hunger hormone) and cortisol. Poor sleep = more cravings + less fat burning.',
+    maintenance: '<strong>Priority:</strong> Maintain a consistent sleep schedule. Your body performs best when recovery patterns are predictable.',
+    beginner:    '<strong>Priority:</strong> Your body is adapting to new stress. You need MORE recovery than advanced athletes, not less. Rest is not weakness.',
+  },
+  exercise: {
+    muscle:      '<strong>Priority:</strong> Train each muscle 2x per week with progressive overload. Volume and intensity matter more than session length.',
+    fatloss:     '<strong>Priority:</strong> Strength training preserves muscle in a deficit. Combine with cardio for maximum calorie burn. Don\'t just do cardio.',
+    maintenance: '<strong>Priority:</strong> Maintain your training frequency. Consistency is more important than new programs when at maintenance.',
+    beginner:    '<strong>Priority:</strong> Full body 3x per week. Master form before adding weight. Progress will come fast in your first 3 months — trust the process.',
+  },
+};
+
+const GUIDES_DATA = [
+  {
+    id: 'nutrition',
+    icon: '🥗',
+    title: 'NUTRITION',
+    sub: 'Fuel your body right — for your specific goal',
+    sections: {
+      muscle: [
+        { title: 'Calorie Surplus & Macros', pts: [
+          'Eat 200–400 kcal above your maintenance level. More than this adds unnecessary fat.',
+          'Protein: 1.6–2g per kg bodyweight daily. Split across 3–4 meals.',
+          'Carbohydrates are your energy currency. Prioritise around training: before and after.',
+          'Fats: 0.8–1g per kg. Don\'t go lower — hormones including testosterone need dietary fat.',
+          'Track with a phone app for 2 weeks. Awareness alone changes habits significantly.',
+        ]},
+        { title: 'Best Kenyan Protein Sources', pts: [
+          'Eggs: cheapest complete protein. 3 eggs = 18g protein. Eat daily.',
+          'Beef: high in creatine and zinc. Best post-workout meal when affordable.',
+          'Fish (tilapia, dagaa): lean, affordable, packed with protein and omega-3.',
+          'Beans & lentils: combine with rice or ugali for a complete amino acid profile.',
+          'Milk (fresh or powder): cheap whey alternative. 500ml = 17g protein.',
+        ]},
+        { title: 'Carbs for Performance', pts: [
+          'Sweet potato: slow digesting, rich in potassium. Best pre-workout carb.',
+          'Ugali (maize meal): fast energy. Ideal immediately post-workout.',
+          'Brown rice and oats: sustained energy for long training days.',
+          'Fruits (banana, mango): natural sugars for quick pre-session energy.',
+          'Avoid refined carbs at night unless it is directly post-workout.',
+        ]},
+        { title: 'Meal Timing', pts: [
+          'Pre-workout (60–90 min before): carbs + moderate protein. No heavy fats.',
+          'Post-workout (within 60 min): protein + fast carbs to start recovery.',
+          'Spread protein across all meals. 20–40g per meal is optimal for muscle synthesis.',
+          'Don\'t train fasted for muscle gain — performance and muscle breakdown suffer.',
+          'Last meal: casein-rich foods (milk, eggs, cheese) to feed muscles overnight.',
+        ]},
+        { title: 'Hydration & Extras', pts: [
+          'Minimum 3 litres of water daily. Add 500ml per hour of training.',
+          'Add salt to meals and water on heavy training days to replace electrolytes.',
+          'Creatine monohydrate: 3–5g daily. The single most effective supplement available.',
+          'Black coffee pre-workout: free performance boost. No fancy pre-workout needed.',
+          'Alcohol kills testosterone, disrupts sleep, and impairs protein synthesis. Minimise it.',
+        ]},
+      ],
+      fatloss: [
+        { title: 'Calorie Deficit Done Right', pts: [
+          'Target 300–500 kcal below maintenance. Bigger deficits cause muscle loss and burnout.',
+          'Weigh yourself weekly, not daily. Daily weight fluctuates by 1–2kg due to water and food.',
+          'If weight stalls for 2+ weeks, reduce calories by 100–150 kcal or add 20 min cardio.',
+          'Do not drop below 1,500 kcal (men) or 1,200 kcal (women) without medical guidance.',
+          'Diet breaks: one week at maintenance every 6–8 weeks resets hormones and motivation.',
+        ]},
+        { title: 'High-Protein Eating for Fat Loss', pts: [
+          'High protein (1.8–2.2g/kg) preserves muscle while in a calorie deficit.',
+          'Protein is the most filling macronutrient — it reduces hunger hormones naturally.',
+          'Start every meal with protein. It controls appetite and prevents overeating carbs.',
+          'Eggs, chicken, fish, beans, and milk are your go-to affordable protein sources.',
+          'Greek yoghurt and cottage cheese are excellent high-protein, low-calorie snacks.',
+        ]},
+        { title: 'Cutting Calories Smartly', pts: [
+          'Cut liquid calories first. Sodas, juice, and chai with lots of sugar add up fast.',
+          'Reduce cooking oil. Fats are 9 kcal/g vs 4 kcal/g for protein and carbs.',
+          'Eat whole fruits instead of juice. The fibre keeps you full and slows sugar absorption.',
+          'Smaller plates genuinely work. Portion perception affects satiety psychologically.',
+          'Eat slowly. It takes 15–20 minutes for the fullness signal to reach your brain.',
+        ]},
+        { title: 'Foods That Help Fat Loss', pts: [
+          'Sukuma wiki, spinach, and cabbage: very low calorie, high fibre and micronutrients.',
+          'Eggs: high protein, moderate fat, very filling. Perfect fat-loss food.',
+          'Avocado: healthy fats that suppress hunger. One half per meal is enough.',
+          'Black coffee and green tea: suppress appetite and boost metabolism slightly.',
+          'Legumes (beans, lentils): high fibre + protein = keeps you full for hours cheaply.',
+        ]},
+        { title: 'What to Reduce or Avoid', pts: [
+          'Ultra-processed foods: mandazi, crisps, biscuits. Empty calories that do not fill you.',
+          'White bread and white rice in large quantities: fast digesting, spike insulin quickly.',
+          'Alcohol: 7 kcal/gram, zero nutrition, lowers inhibitions making overeating likely.',
+          'Skip eating out frequently — restaurant and fast food portions are calorie bombs.',
+          'Late-night snacking: it is rarely hunger. Brush teeth at 9pm to signal the kitchen is closed.',
+        ]},
+      ],
+      maintenance: [
+        { title: 'Finding Your Maintenance Calories', pts: [
+          'Track food for 2 weeks while weight stays the same — that is your maintenance.',
+          'Rough estimate: bodyweight (kg) × 33 kcal = maintenance for moderately active people.',
+          'Adjust by 100–150 kcal every 2 weeks based on weight trend.',
+          'Maintenance is a range, not a fixed number. It shifts with activity, stress, and season.',
+          'You can be more relaxed at maintenance — focus on food quality over strict tracking.',
+        ]},
+        { title: 'Balanced Macros', pts: [
+          'Protein: 1.2–1.6g/kg bodyweight. Enough to maintain muscle without obsessing.',
+          'Carbs: make up the bulk of your calories. Eat what your activity level demands.',
+          'Fats: 25–35% of total calories for hormonal health and brain function.',
+          'Don\'t over-restrict any macronutrient at maintenance. Balance is sustainable.',
+          'Prioritise food variety — different colours on the plate means different nutrients.',
+        ]},
+        { title: 'Long-Term Sustainable Habits', pts: [
+          '80/20 rule: eat well 80% of the time. 20% flexibility keeps you sane long-term.',
+          'Cook most meals at home. Restaurant food is hard to track and typically calorie-dense.',
+          'Meal prep 2–3 days at a time. Preparation removes daily decision fatigue.',
+          'Learn 5–6 go-to healthy meals you enjoy. Repetition is not boring — it is efficient.',
+          'Never restrict so hard that you binge. Steady beats extreme every single time.',
+        ]},
+        { title: 'Micronutrients & Whole Foods', pts: [
+          'Eat a variety of vegetables daily. Sukuma, tomatoes, carrots, onions at minimum.',
+          'Include fruits 1–2 times daily. Mangoes, bananas, pawpaw are accessible and nutritious.',
+          'Whole grains over refined. Brown ugali, brown rice, whole wheat bread where possible.',
+          'Fermented foods (fermented milk, yoghurt) support gut health and immunity.',
+          'Sun exposure + vitamin D foods (eggs, fatty fish) combat the Kenyan indoor lifestyle.',
+        ]},
+        { title: 'Eating Out Without Ruining Progress', pts: [
+          'Choose protein + vegetable combinations when eating out. Avoid fried everything.',
+          'Request sauces on the side. Most restaurant calories hide in dressings and sauces.',
+          'Drink water before the meal. Reduces overeating by 20% on average.',
+          'Don\'t arrive at restaurants starving — you will make poor choices.',
+          'One indulgent meal per week does not break progress. Consistency wins over months.',
+        ]},
+      ],
+      beginner: [
+        { title: 'Keep It Dead Simple', pts: [
+          'Eat mostly whole, unprocessed foods. If it comes in a packet with 20 ingredients, eat less of it.',
+          'Hit your protein target every day. Everything else can come later.',
+          'Rough daily protein: bodyweight in kg = grams of protein. 65kg = 65g protein minimum.',
+          'Three meals per day is fine. You do not need 6 meals or special timing to start.',
+          'Stop drinking calories. Switch soda, juice, and chai with lots of sugar to water first.',
+        ]},
+        { title: 'Easy Affordable Kenyan Meals', pts: [
+          'Breakfast: 3 eggs scrambled + 2 slices whole bread + black tea without sugar.',
+          'Lunch: ugali + beans + sukuma wiki. Balanced, cheap, high protein and fibre.',
+          'Dinner: brown rice + tilapia or chicken + tomato-onion salad.',
+          'Snacks: banana, boiled egg, groundnuts, or plain yoghurt.',
+          'These four meals alone will out-perform most "diet plans" for beginners.',
+        ]},
+        { title: 'What to Stop Doing Immediately', pts: [
+          'Stop skipping breakfast — it leads to overeating later and energy crashes.',
+          'Stop drinking sodas daily. Replace with water. This alone can shift 2–3kg in a month.',
+          'Stop eating until uncomfortably full. Eat to 80% full and wait 15 minutes.',
+          'Stop buying supplements before mastering basic food habits.',
+          'Stop following extreme diets. Sustainable beats drastic every single time.',
+        ]},
+        { title: 'Understanding Calories Simply', pts: [
+          'Calories are energy. Eat more than you burn = gain weight. Eat less = lose weight.',
+          'You do not need to count every calorie as a beginner — just be aware of portions.',
+          'Protein and vegetables fill you up on fewer calories. Prioritise both.',
+          'Fat does not make you fat. Excess calories do. Avocado and groundnuts are fine.',
+          'Carbs are not bad. White ugali eaten in huge amounts without activity — that is the issue.',
+        ]},
+        { title: 'Building the Habit', pts: [
+          'Plan meals the night before. Decision fatigue leads to bad choices at lunchtime.',
+          'One small positive change per week. Don\'t overhaul everything on day one.',
+          'Do not aim for perfection. Missing one good meal does not ruin your progress.',
+          'Find one healthy meal you genuinely enjoy and eat it regularly.',
+          'Track your water intake for one week. Most people are chronically dehydrated without knowing.',
+        ]},
+      ],
+    },
+  },
+  {
+    id: 'recovery',
+    icon: '😴',
+    title: 'RECOVERY & REST',
+    sub: 'When your muscles actually grow — optimise it',
+    sections: {
+      muscle: [
+        { title: 'Sleep — The Most Anabolic Tool', pts: [
+          'Aim for 8–9 hours. Growth hormone is released primarily during deep sleep stages 3 & 4.',
+          'Consistent sleep and wake times matter more than total hours alone.',
+          'Avoid screens 1 hour before bed. Blue light suppresses melatonin by up to 50%.',
+          'Sleep in a cool (16–19°C), dark room. Temperature drop signals the brain to sleep.',
+          'Even one night of 5–6 hours reduces testosterone by 10–15%. Sleep is not optional.',
+        ]},
+        { title: 'Training Frequency & Rest Days', pts: [
+          'Each muscle group needs 48–72 hours to recover before training again.',
+          'Take at least 1–2 full rest days per week. Active rest (light walk) is ideal.',
+          'Back-to-back sessions on the same muscle group = overtraining, not dedication.',
+          'If you are always sore, always tired, or losing strength — you are underrecovering.',
+          'More volume only works if you can recover from it. Quality over quantity.',
+        ]},
+        { title: 'Nutrition for Recovery', pts: [
+          'Post-workout: 30–40g protein within 60 minutes. Muscle protein synthesis window is open.',
+          'Carbs post-workout replenish glycogen. Ugali, rice, or banana are ideal.',
+          'Creatine (3–5g daily) speeds up phosphocreatine recovery between sets and sessions.',
+          'Vitamin C (fruits, sukuma wiki) reduces exercise-induced inflammation.',
+          'Stay hydrated. Dehydration by 2% reduces muscle recovery rate significantly.',
+        ]},
+        { title: 'Stretching & Mobility', pts: [
+          'Static stretching after training: hold each 30–60 seconds. Do not stretch cold muscles.',
+          'Key stretches for lifters: hip flexors, hamstrings, chest, lats, shoulder rotators.',
+          'Foam rolling (or a water bottle) before training reduces DOMS and improves ROM.',
+          'Spend 10 minutes on mobility after every session. It compounds massively over months.',
+          'Yoga 1x per week dramatically improves recovery, posture, and joint health.',
+        ]},
+        { title: 'Recognising Overtraining', pts: [
+          'Signs: declining performance, persistent soreness, poor sleep, mood changes, illness.',
+          'Overtraining is not "training too hard in one session" — it builds over weeks.',
+          'Deload week every 4–6 weeks: reduce weight by 40%, focus on form and mobility.',
+          'When sick, rest completely. Training through illness extends recovery and risks injury.',
+          'Track your resting heart rate. A consistent elevation of 5–10 bpm = overtraining signal.',
+        ]},
+      ],
+      fatloss: [
+        { title: 'Why Sleep Is a Fat Loss Tool', pts: [
+          'Sleep deprivation raises ghrelin (hunger hormone) by 24% — you will crave more food.',
+          'Poor sleep elevates cortisol. High cortisol tells your body to store fat, especially abdomen.',
+          'Less than 7 hours of sleep reduces the proportion of fat lost in a deficit by 55%.',
+          '8 hours of sleep per night is arguably more important than the workout itself for fat loss.',
+          'Fix sleep before adding more cardio or cutting more calories. Foundation first.',
+        ]},
+        { title: 'Active Recovery', pts: [
+          'On rest days, walk 7,000–10,000 steps. This burns 300–500 extra kcal without gym stress.',
+          'Light cycling, swimming, or yoga on rest days keeps metabolism elevated.',
+          'NEAT (Non-Exercise Activity Thermogenesis): take stairs, walk to shops, stand more.',
+          'NEAT can account for 300–500 kcal per day — as much as a gym session.',
+          'Do not sit completely still on rest days. Movement all day beats 1 hour of intense exercise.',
+        ]},
+        { title: 'Cortisol & Stress Management', pts: [
+          'Chronic stress = chronic cortisol = fat storage and muscle loss. Manage it seriously.',
+          'Deep breathing, prayer, walks in nature, and social time all reduce cortisol.',
+          'Overtraining on a deficit amplifies cortisol damage. Do not add volume when cutting.',
+          'Monitor life stress. If work or life is extremely stressful, reduce training intensity temporarily.',
+          '5–10 minutes of mindfulness or breathing daily has measurable cortisol-lowering effects.',
+        ]},
+        { title: 'Muscle Preservation During Fat Loss', pts: [
+          'Keep training intensity high even in a deficit. This signals your body to keep muscle.',
+          'Do not drop training volume drastically when cutting — reduce cardio before weights.',
+          'Protein intake is the single most powerful muscle-preservation tool in a deficit.',
+          'Avoid crash diets. Very low calories cause rapid muscle loss, slowing metabolism long term.',
+          'Progressive overload still applies during fat loss. Try to maintain or improve lifts.',
+        ]},
+        { title: 'Dealing With Soreness (DOMS)', pts: [
+          'DOMS (Delayed Onset Muscle Soreness) peaks 24–48 hours after training. It is normal.',
+          'Light movement through soreness is fine and actually speeds up recovery.',
+          'Warm showers, gentle stretching, and adequate protein all reduce DOMS.',
+          'If soreness is sharp or joint-based (not muscle), stop and rest. That is injury, not DOMS.',
+          'DOMS reduces over weeks as your body adapts. It is not a reliable measure of a good workout.',
+        ]},
+      ],
+      maintenance: [
+        { title: 'Consistent Sleep Schedule', pts: [
+          'Consistency matters more than total hours. Same sleep and wake time daily — including weekends.',
+          'Irregular sleep disrupts circadian rhythm, affecting energy, appetite, and mood.',
+          'Aim for 7–8 hours. Performance and cognition plateau above 9 hours for most adults.',
+          'Afternoon naps of 20 minutes improve alertness without disrupting night sleep.',
+          'Poor sleep quality at maintenance slows adaptation and increases injury risk.',
+        ]},
+        { title: 'Training Recovery Balance', pts: [
+          'At maintenance, your recovery capacity matches your training load. Keep the balance.',
+          '1–2 rest days per week is optimal. Adjust based on how you feel week to week.',
+          'Active recovery: swimming, walking, yoga, cycling. Keeps blood flowing to muscles.',
+          'Periodise your training — alternate between higher and lower intensity weeks.',
+          'Annual deload: take 1–2 full weeks off every 4–6 months. You will return stronger.',
+        ]},
+        { title: 'Stretching & Long-Term Joint Health', pts: [
+          'Flexibility lost in your 30s is very hard to regain. Maintain it in your 20s–30s.',
+          'Dynamic warm-up before every session: leg swings, arm circles, hip rotations.',
+          'Static stretching post-session holds 30–60 seconds per muscle. Non-negotiable over time.',
+          'Focus on hip flexors and thoracic spine — these are the first to stiffen with desk work.',
+          'Foam rolling 3–4x per week prevents adhesions and improves range of motion.',
+        ]},
+        { title: 'Managing Fatigue', pts: [
+          'Rate your energy 1–10 before every session. Below 5 = reduce intensity, do not skip.',
+          'Distinguish between laziness and genuine fatigue. The former responds to starting. The latter needs rest.',
+          'Caffeine masks fatigue but does not resolve it. Use it strategically, not daily.',
+          'Iron deficiency is common in Kenyan adults — it causes chronic fatigue. Include red meat and beans.',
+          'Life stress and training stress both consume recovery resources. Account for both.',
+        ]},
+        { title: 'Recovery Nutrition at Maintenance', pts: [
+          'Post-workout protein is still important at maintenance. 25–35g within 60 minutes.',
+          'Anti-inflammatory foods: fatty fish, avocado, berries, dark leafy greens, turmeric.',
+          'Tart cherry juice or pineapple post-workout reduces inflammation and DOMS.',
+          'Magnesium-rich foods (pumpkin seeds, spinach, dark chocolate) improve sleep quality.',
+          'Zinc (red meat, pumpkin seeds) supports testosterone and immune function in active adults.',
+        ]},
+      ],
+      beginner: [
+        { title: 'Rest Is Part of the Program', pts: [
+          'Your muscles grow during rest — not during the workout. The workout is just the signal.',
+          'As a beginner, take at least 2 rest days per week. More training is not always better.',
+          'Soreness after your first few sessions is completely normal. It reduces over 2–3 weeks.',
+          'If you are sore, walking or light stretching on rest days actually speeds up recovery.',
+          'Skipping rest days is one of the top reasons beginners quit. Burnout is real.',
+        ]},
+        { title: 'Sleep Basics', pts: [
+          'Get 7–9 hours of sleep every night. As a beginner, your body is adapting to entirely new stress.',
+          'Sleep is when your muscles repair and grow. You cannot out-train poor sleep.',
+          'Consistent bed and wake times matter. Try to keep within 1 hour of the same time daily.',
+          'Put your phone away 30 minutes before bed. Blue light affects sleep quality measurably.',
+          'A dark, cool room dramatically improves sleep depth. Small changes, big results.',
+        ]},
+        { title: 'Listening to Your Body', pts: [
+          'Muscle soreness (dull ache, stiffness) = normal. Train through it with light movement.',
+          'Sharp pain in joints or sudden pain during a movement = STOP. Rest and investigate.',
+          'Feeling tired 3–4 hours after training is normal. It is not a sign you are unfit.',
+          'If you feel sick, skip the gym. Training while ill delays both recovery and fitness progress.',
+          'Your body communicates. The skill of a good athlete is knowing when to push and when to rest.',
+        ]},
+        { title: 'Simple Recovery Habits', pts: [
+          'Stretch for 5–10 minutes after every session. Your future self will thank you.',
+          'Drink water immediately after training. Aim for 500ml within 30 minutes.',
+          'Eat a protein-containing meal within 1–2 hours post-workout. Eggs, beans, or meat.',
+          'Walk on rest days. Even 20 minutes keeps blood moving and reduces stiffness.',
+          'Start a simple sleep routine: same time, dark room, phone away. Three steps, big impact.',
+        ]},
+        { title: 'Managing Early Expectations', pts: [
+          'You will feel sore, tired, and possibly worse for the first 2–3 weeks. This is adaptation.',
+          'Visible results take 4–6 weeks minimum. Strength improvements come first.',
+          'Do not compare your week 2 to someone else\'s year 3. Everyone started at zero.',
+          'Consistency for 3 months will produce results that no 2-week crash program ever will.',
+          'The goal is to still be training 12 months from now. Start sustainable, not extreme.',
+        ]},
+      ],
+    },
+  },
+  {
+    id: 'exercise',
+    icon: '💪',
+    title: 'EXERCISE ADVICE',
+    sub: 'Train smarter — structured guidance for your goal',
+    sections: {
+      muscle: [
+        { title: 'Training Frequency & Split', pts: [
+          'Train each muscle group 2x per week. This is the evidence-backed sweet spot for hypertrophy.',
+          'Ideal split: Push/Pull/Legs (6 days) or Upper/Lower (4 days). Both work extremely well.',
+          '3-day full body is also effective — less volume per session but hit everything twice.',
+          'Volume per week per muscle: 10–20 sets. Start at 10, add sets as you adapt.',
+          'Do not train the same muscle two days in a row. 48–72 hour recovery is required.',
+        ]},
+        { title: 'Progressive Overload', pts: [
+          'Progressive overload is the only mechanism for muscle growth. Without it, you plateau.',
+          'When you can complete all reps with good form, add 2.5kg at the next session.',
+          'Cannot add weight? Add 1–2 reps per set, then increase weight when sets are full.',
+          'Log every session: exercise, weight, sets, reps. Without data you are guessing.',
+          'Strength gains = muscle gains. Focus on getting stronger in the 6–12 rep range.',
+        ]},
+        { title: 'Rep Ranges & Tempo', pts: [
+          '6–12 reps per set is the primary hypertrophy range. Most of your volume should be here.',
+          'Heavier work (4–6 reps) builds maximum strength. Include 1–2 compound lifts in this range.',
+          'Higher reps (15–20) are valid for isolation work — biceps, laterals, calves.',
+          'Tempo: 2–3 seconds lowering (eccentric), 1 second pause, 1–2 seconds lifting.',
+          'Time under tension matters. Controlled reps outperform fast sloppy reps every time.',
+        ]},
+        { title: 'Exercise Selection', pts: [
+          'Compound movements first: Romanian deadlift, goblet squat, bench press, bent-over row.',
+          'Isolation movements after: curls, lateral raises, extensions, flies.',
+          'Dumbbell advantage: unilateral work (single arm/leg) corrects imbalances faster than barbells.',
+          'Include a pressing, pulling, hinge, and squat pattern every week. Cover all bases.',
+          'Master 4–6 movements perfectly before adding new exercises. Quality over variety.',
+        ]},
+        { title: 'Avoiding Plateaus', pts: [
+          'Deload every 4–6 weeks: reduce weight by 40% and train for form. You will come back stronger.',
+          'Change rep ranges every 6–8 weeks. Your muscles adapt to repetitive stimulus.',
+          'Manipulate rest times: shorter rest = more metabolic stress. Longer rest = more strength.',
+          'Add pauses, slow eccentrics, or 1.5-rep variations for new stimulus without new weight.',
+          'Most plateaus are caused by under-eating, under-sleeping, or under-tracking. Check those first.',
+        ]},
+      ],
+      fatloss: [
+        { title: 'Why Strength Training Beats Cardio Alone', pts: [
+          'Cardio burns calories during the session. Muscle burns calories 24/7 — even at rest.',
+          'A kg of muscle burns 13 kcal per day at rest. Build muscle and your metabolism rises permanently.',
+          'Strength training in a deficit preserves muscle. Cardio alone causes muscle loss with fat loss.',
+          'After a cardio session, appetite often spikes. After strength training, hunger is more suppressed.',
+          'Aim for 3–4 strength sessions per week minimum, even when prioritising fat loss.',
+        ]},
+        { title: 'Cardio for Fat Loss', pts: [
+          'Best cardio for fat loss: LISS (Low Intensity Steady State) — walking, cycling, skipping.',
+          'LISS: 30–45 minutes at 60–70% max heart rate. Burns fat without muscle breakdown.',
+          'HIIT: 20 minutes of intervals burns as many calories as 40 minutes LISS. Time-efficient.',
+          'Do not do HIIT and heavy lifting on the same day. Central nervous system fatigue is real.',
+          'Skipping rope: best home cardio tool. 20 minutes = 200–300 kcal burned. Cheap and effective.',
+        ]},
+        { title: 'Training Structure for Fat Loss', pts: [
+          'Ideal: 3–4 strength sessions + 2–3 cardio sessions per week. Separate them where possible.',
+          'Strength before cardio if in the same session. You need strength for good lifting technique.',
+          'Circuit training: 3–4 exercises back-to-back with minimal rest. Burns more calories per session.',
+          'Keep rest periods shorter (45–60 seconds) during fat loss to increase total calorie burn.',
+          'Morning training on an empty stomach is fine for cardio. Not recommended for heavy lifting.',
+        ]},
+        { title: 'Exercise Order & Programming', pts: [
+          'Always start with compound lifts (deadlift, squat, press, row) when energy is highest.',
+          'Finish with isolation and cardio. Compound movements require maximal focus and energy.',
+          'Superset antagonist muscles (chest + back, biceps + triceps) to save time and burn more.',
+          'Full body workouts 3x per week are highly efficient for fat loss — more total muscles worked.',
+          'Do not skip legs. Leg training burns the most calories per session of any muscle group.',
+        ]},
+        { title: 'Tracking Progress Beyond the Scale', pts: [
+          'The scale lies. Water retention, muscle gain, and hormones cause daily fluctuations of 1–2kg.',
+          'Measure weekly average weight, not daily. 4-week trends reveal true progress.',
+          'Progress photos every 2 weeks. Body composition changes that the scale misses become visible.',
+          'Track measurements: waist, hips, chest, arms. Inches lost matter more than kg lost.',
+          'Strength improvements while losing weight = you are doing everything right. Trust the process.',
+        ]},
+      ],
+      maintenance: [
+        { title: 'Training to Stay Strong', pts: [
+          'Maintenance means maintaining intensity, not reducing it. Keep weights challenging.',
+          '3–5 training sessions per week is sustainable long-term for most people.',
+          'At maintenance, you have more recovery to give. Use it to build strength in weak areas.',
+          'Periodise: alternate between strength focus (4–6 reps) and hypertrophy (8–12 reps) blocks.',
+          'Deload weeks every 6–8 weeks. Active recovery, not complete rest.',
+        ]},
+        { title: 'Avoiding Stagnation', pts: [
+          'Progressive overload still applies at maintenance. Always try to beat your last session.',
+          'Change your program every 8–12 weeks. Your muscles adapt — introduce new stimulus.',
+          'Try new movement variations: Bulgarian split squat, Arnold press, trap bar deadlift.',
+          'Weak points: identify 2–3 and devote extra sets to them for 6–8 weeks.',
+          'Train for enjoyment too. Sports, martial arts, swimming — activity you love stays long-term.',
+        ]},
+        { title: 'Injury Prevention', pts: [
+          'Warm up every single session. 5–10 min light cardio + dynamic stretching is non-negotiable.',
+          'Deload when joints ache persistently. Continuing through joint pain causes serious damage.',
+          'Never sacrifice form for weight. Ego lifting is the number one cause of training injuries.',
+          'Strengthen your rotator cuffs, hip abductors, and core — stabilisers prevent big injuries.',
+          'If something feels wrong mid-set, stop. One smart decision prevents months of recovery.',
+        ]},
+        { title: 'Adding Variety', pts: [
+          'Include unilateral work: single-leg deadlifts, single-arm rows, lunges. Fix imbalances.',
+          'Add explosive work if joints allow: jump squats, clap push-ups, medicine ball throws.',
+          'Grip work: farmer\'s carries, dead hangs. Grip strength correlates with longevity.',
+          'Mobility training 2x per week improves movement quality and reduces injury risk.',
+          'Outdoor training occasionally: hill sprints, stair runs, carrying sandbags. Fresh stimulus.',
+        ]},
+        { title: 'Long-Term Mindset', pts: [
+          'The goal at maintenance is to still be training pain-free at 50, 60, 70.',
+          'Listen to your body over any rigid program. Adjust based on life, not just the plan.',
+          'Train with people occasionally. Social accountability and competition sharpen performance.',
+          'Log your best lifts. Knowing your records motivates you to protect and beat them.',
+          'Celebrate consistency, not just PRs. Showing up for 5 years is the real achievement.',
+        ]},
+      ],
+      beginner: [
+        { title: 'Where to Start', pts: [
+          'Begin with full body training 3x per week. Monday, Wednesday, Friday is the classic setup.',
+          'Do 3 sets of 8–12 reps per exercise. This is the proven beginner range.',
+          'Master 5–6 movements before adding complexity: goblet squat, Romanian deadlift, bench press, row, shoulder press, plank.',
+          'Sessions should be 40–50 minutes maximum. Longer is not better for beginners.',
+          'Your first 3 months are about learning movement, not setting records. Form is everything.',
+        ]},
+        { title: 'Learning Proper Form', pts: [
+          'Watch a proper tutorial on YouTube for each exercise before performing it.',
+          'Train in front of a mirror or record yourself to check your form.',
+          'Common beginner mistakes: rounded back on deadlifts, knees caving on squats, elbow flare on bench.',
+          'Use light weight until form is perfect. You cannot build a house on a broken foundation.',
+          'Ask for feedback from someone experienced. One form cue at the right time changes everything.',
+        ]},
+        { title: 'Progressive Overload for Beginners', pts: [
+          'Good news: as a beginner you will get stronger every single week. Enjoy this phase.',
+          'When you can do all reps with good form, increase weight at the next session.',
+          'Add small amounts: 2.5kg per dumbbell is a big jump at first. Adjust by feel.',
+          'Log every session. Write the date, exercise, weight, and reps. Basic phone notes work fine.',
+          'Newbie gains are real. First 3–6 months of consistent training produce the fastest results of your life.',
+        ]},
+        { title: 'Simple Beginner Workout Structure', pts: [
+          'Warm up: 5 min light cardio (jumping jacks, skipping) + leg swings and arm circles.',
+          'Goblet squat: 3×10 → Romanian deadlift: 3×10 → Dumbbell bench press: 3×10.',
+          'Bent-over dumbbell row: 3×10 → Dumbbell shoulder press: 3×10 → Plank: 3×30 seconds.',
+          'Cool down: 5–10 min stretching — quads, hamstrings, chest, and shoulders.',
+          'This takes 45–50 minutes total and covers every major muscle group. Simple but complete.',
+        ]},
+        { title: 'Mindset for the Long Haul', pts: [
+          'The hardest workout is the first one. Every session after that gets slightly easier.',
+          'Set a 30-day attendance goal, not a physique goal. Show up 12 times in 30 days.',
+          'Do not quit after one bad session. Progress is not linear — some days are just hard.',
+          'Compare yourself only to last week\'s version of you. That is the only fair comparison.',
+          'Three months of consistency will change your body, energy, confidence, and life. Start today.',
+        ]},
+      ],
+    },
+  },
+];
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function renderGuides() {
+  const list = document.getElementById('guideList');
+  list.innerHTML = GUIDES_DATA.map((g, gi) => {
+    const sections = g.sections[currentGoal];
+    const sHTML = sections.map(s => `
+      <div class="gsub">
+        <div class="gsub-hd">${s.title}</div>
+        <ul>${s.pts.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>`).join('');
+
+    return `
+      <div class="gitem fade-in" id="gitem-${g.id}" style="animation-delay:${gi * 0.07}s">
+        <div class="ghd" onclick="toggleGuide('${g.id}')">
+          <div class="ghd-ic">${g.icon}</div>
+          <div class="ghd-info">
+            <div class="ghd-t">${g.title}</div>
+            <div class="ghd-s">${g.sub}</div>
+          </div>
+          <div class="garr">›</div>
+        </div>
+        <div class="gbody">
+          <div class="gcont">
+            <div class="gcont-divider"></div>
+            <div class="goal-badge">📌 ${GOAL_LABELS[currentGoal]}</div>
+            <div class="ghighlight">${GOAL_HIGHLIGHTS[g.id][currentGoal]}</div>
+            ${sHTML}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleGuide(id) {
+  const el = document.getElementById('gitem-' + id);
+  const wasOpen = el.classList.contains('open');
+  // close all first
+  document.querySelectorAll('.gitem').forEach(i => i.classList.remove('open'));
+  // if it was closed, open it
+  if (!wasOpen) el.classList.add('open');
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+renderTip();
+renderGuides();
+</script>
+</body>
+</html>

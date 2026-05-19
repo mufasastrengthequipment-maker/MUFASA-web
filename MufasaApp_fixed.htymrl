@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MUFASA — Forge Your Legacy</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#050403;color:#F4EFE4;font-family:'Barlow',sans-serif;overflow:hidden}
+button{cursor:pointer;font-family:inherit;transition:all .18s}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#0C0A08}
+::-webkit-scrollbar-thumb{background:rgba(212,148,42,.32);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes glow{0%,100%{box-shadow:0 0 14px rgba(212,148,42,.2)}50%{box-shadow:0 0 32px rgba(212,148,42,.5)}}
+.fadeUp{animation:fadeUp .4s cubic-bezier(.23,1,.32,1) both}
+.pop{animation:pop .35s cubic-bezier(.23,1,.32,1) both}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+.glow{animation:glow 2.5s ease infinite}
+@media print{
+  .no-print{display:none!important}
+  body{background:white!important;color:#111!important;overflow:auto!important}
+  .print-only{display:block!important}
+  #panel-session{display:none!important}
+  #panel-print{display:block!important}
+  #panel-print .panel-toggle{display:none!important}
+  #panel-print .panel-body{max-height:none!important;overflow:visible!important}
+  #panel-print .panel-inner{height:auto!important;overflow:visible!important}
+  .ptable{width:100%;border-collapse:collapse}
+  .ptable th{background:#D4942A!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ptable td{color:#111!important;border-bottom:1px solid #ddd!important}
+  .ptable tr:nth-child(even) td{background:#f9f6ef!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.print-only{display:none}
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<canvas id="confetti-canvas" style="display:none;position:fixed;inset:0;pointer-events:none;z-index:999;"></canvas>
+
+<script>
+// ══════════════════════════════════════════
+//   THEME
+// ══════════════════════════════════════════
+const T = {
+  g:"#D4942A", gl:"#F0B84A", gd:"#A8741F",
+  b1:"rgba(212,148,42,.13)", b2:"rgba(212,148,42,.32)",
+  bg:"#050403", s1:"#0C0A08", s2:"#121008",
+  card:"#18150F", card2:"#1F1B12",
+  w:"#F4EFE4", grey:"#A09890", dim:"#7A7570",
+};
+
+// ══════════════════════════════════════════
+//   WORKOUT DATA
+// ══════════════════════════════════════════
+const GOALS = [
+  { id:"strength", icon:"💪", name:"STRENGTH", desc:"Build raw power", color:"#D4942A",
+    plans:[
+      { id:"str3", name:"3-Day Powerlifting", weeks:8, level:"Intermediate", equip:"15–35KG DBs", days:[
+        { title:"Day A — Lower Body", rows:[
+          {ex:"DB Romanian Deadlift",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:"Full hip hinge. Drive through heels."},
+          {ex:"Goblet Squat",sets:"4",reps:"8,6,5,4",rest:"2 min",note:"Chest up, knees track toes."},
+          {ex:"DB Reverse Lunge",sets:"3",reps:"8 each",rest:"90s",note:"Step back wide for glutes."},
+          {ex:"Single-Leg Calf Raise",sets:"3",reps:"15 each",rest:"60s",note:"Full range of motion."},
+        ]},
+        { title:"Day B — Upper Body", rows:[
+          {ex:"DB Bench Press",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:"Squeeze chest at top."},
+          {ex:"Bent-Over DB Row",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:"Pull elbows back, no rounding."},
+          {ex:"Seated DB Shoulder Press",sets:"4",reps:"6,5,4,3",rest:"2 min",note:"Neutral spine."},
+          {ex:"Hammer Curl",sets:"3",reps:"8,6,5",rest:"90s",note:"Neutral grip, controlled."},
+          {ex:"DB Skull Crusher",sets:"3",reps:"8,6,5",rest:"90s",note:"Elbows fixed, slow descent."},
+        ]},
+        { title:"Day C — Full Body", rows:[
+          {ex:"DB Deadlift",sets:"4",reps:"6,5,4,3",rest:"3 min",note:"Hips drive forward at top."},
+          {ex:"Incline DB Press",sets:"4",reps:"6,5,4,3",rest:"2 min",note:"30° incline."},
+          {ex:"DB Pullover",sets:"3",reps:"10,8,8",rest:"90s",note:"Stretch lats fully at bottom."},
+          {ex:"Farmer Carry",sets:"3",reps:"40m",rest:"90s",note:"Grip tight, shoulders back."},
+        ]},
+      ]},
+      { id:"str5", name:"5-Day Strength Split", weeks:10, level:"Advanced", equip:"20–35KG DBs", days:[
+        { title:"Monday — Chest & Triceps", rows:[
+          {ex:"DB Flat Bench Press",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:""},
+          {ex:"DB Incline Press",sets:"4",reps:"6,5,4,3",rest:"2 min",note:""},
+          {ex:"DB Fly",sets:"3",reps:"10,8,8",rest:"90s",note:""},
+          {ex:"DB Skull Crusher",sets:"4",reps:"8,6,5,4",rest:"2 min",note:""},
+          {ex:"Tricep Kickback",sets:"3",reps:"10 each",rest:"60s",note:""},
+        ]},
+        { title:"Tuesday — Back & Biceps", rows:[
+          {ex:"Bent-Over DB Row",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:""},
+          {ex:"Single-Arm DB Row",sets:"4",reps:"8,6,5,4",rest:"2 min",note:""},
+          {ex:"DB Pullover",sets:"3",reps:"10,8,8",rest:"90s",note:""},
+          {ex:"Hammer Curl",sets:"4",reps:"8,6,5,4",rest:"90s",note:""},
+          {ex:"Incline DB Curl",sets:"3",reps:"10,8,8",rest:"60s",note:""},
+        ]},
+        { title:"Wednesday — Legs", rows:[
+          {ex:"DB Romanian Deadlift",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:""},
+          {ex:"DB Goblet Squat",sets:"4",reps:"8,6,5,4",rest:"2 min",note:""},
+          {ex:"DB Walking Lunge",sets:"4",reps:"10 each",rest:"2 min",note:""},
+          {ex:"DB Sumo Squat",sets:"3",reps:"12,10,8",rest:"90s",note:""},
+          {ex:"Calf Raise",sets:"4",reps:"15 each",rest:"60s",note:""},
+        ]},
+        { title:"Thursday — Shoulders", rows:[
+          {ex:"DB Seated Press",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:""},
+          {ex:"DB Arnold Press",sets:"4",reps:"8,6,5,4",rest:"2 min",note:""},
+          {ex:"DB Lateral Raise",sets:"4",reps:"12,10,10,8",rest:"90s",note:""},
+          {ex:"DB Front Raise",sets:"3",reps:"12,10,8",rest:"90s",note:""},
+          {ex:"DB Rear Delt Fly",sets:"3",reps:"15,12,12",rest:"60s",note:""},
+        ]},
+        { title:"Friday — Full Power", rows:[
+          {ex:"DB Deadlift",sets:"5",reps:"5,4,3,3,2",rest:"3 min",note:""},
+          {ex:"DB Clean & Press",sets:"4",reps:"6,5,4,3",rest:"2 min",note:""},
+          {ex:"DB Thruster",sets:"3",reps:"8,6,6",rest:"2 min",note:""},
+          {ex:"Farmer Walk",sets:"3",reps:"50m",rest:"2 min",note:""},
+        ]},
+      ]},
+    ]},
+  { id:"fatloss", icon:"🔥", name:"FAT LOSS", desc:"Shred body fat", color:"#E85D3A",
+    plans:[
+      { id:"fl3", name:"3-Day HIIT Circuit", weeks:6, level:"All Levels", equip:"5–15KG DBs", days:[
+        { title:"Circuit A — 3 Rounds (40s on/20s off)", rows:[
+          {ex:"DB Squat to Press",sets:"3",reps:"40s",rest:"20s",note:"Explosive squat into overhead press."},
+          {ex:"DB Renegade Row",sets:"3",reps:"40s",rest:"20s",note:"Plank position, alternate arms."},
+          {ex:"DB Reverse Lunge + Curl",sets:"3",reps:"40s",rest:"20s",note:"Lunge back, curl at top."},
+          {ex:"DB Swing (KB style)",sets:"3",reps:"40s",rest:"20s",note:"Hip hinge drive."},
+          {ex:"DB Burpee",sets:"3",reps:"40s",rest:"60s",note:"Full burpee holding DBs."},
+        ]},
+        { title:"Circuit B — 3 Rounds (40s on/20s off)", rows:[
+          {ex:"DB Push Press",sets:"3",reps:"40s",rest:"20s",note:"Use leg drive."},
+          {ex:"DB Sumo Deadlift",sets:"3",reps:"40s",rest:"20s",note:"Wide stance, toes out."},
+          {ex:"DB Mountain Climber Row",sets:"3",reps:"40s",rest:"20s",note:"In plank, row each arm."},
+          {ex:"DB Goblet Squat Jump",sets:"3",reps:"40s",rest:"20s",note:"Light DB, explosive jump."},
+        ]},
+      ]},
+      { id:"fl4", name:"4-Day Shred Program", weeks:8, level:"Intermediate", equip:"8–20KG DBs", days:[
+        { title:"Day 1 — Upper Shred", rows:[
+          {ex:"DB Push Press",sets:"4",reps:"12,10,10,8",rest:"75s",note:""},
+          {ex:"DB Bent Row (Wide)",sets:"4",reps:"12,10,10,8",rest:"75s",note:""},
+          {ex:"DB Lateral Raise",sets:"3",reps:"15,12,12",rest:"60s",note:""},
+          {ex:"DB Curl to Press",sets:"3",reps:"12,10,10",rest:"60s",note:""},
+          {ex:"Kickback + Push-Up",sets:"3",reps:"15/12",rest:"60s",note:"Superset."},
+        ]},
+        { title:"Day 2 — Lower Shred", rows:[
+          {ex:"DB Goblet Squat",sets:"4",reps:"15,12,12,10",rest:"75s",note:""},
+          {ex:"DB Romanian Deadlift",sets:"4",reps:"15,12,12,10",rest:"75s",note:""},
+          {ex:"DB Lateral Lunge",sets:"3",reps:"10 each",rest:"75s",note:""},
+          {ex:"DB Step-Up",sets:"3",reps:"12 each",rest:"60s",note:""},
+          {ex:"DB Calf Raise",sets:"3",reps:"20",rest:"45s",note:""},
+        ]},
+        { title:"Day 3 — Full Body Burn", rows:[
+          {ex:"DB Thrusters",sets:"4",reps:"12,10,10,8",rest:"90s",note:""},
+          {ex:"DB Renegade Row",sets:"3",reps:"8 each",rest:"75s",note:""},
+          {ex:"DB Reverse Lunge + Press",sets:"3",reps:"10 each",rest:"75s",note:""},
+          {ex:"DB Swing",sets:"3",reps:"20",rest:"60s",note:""},
+        ]},
+        { title:"Day 4 — HIIT Finisher", rows:[
+          {ex:"DB Squat Jump",sets:"5",reps:"10",rest:"30s",note:"Light DB."},
+          {ex:"DB Snatch (alternating)",sets:"5",reps:"5 each",rest:"45s",note:""},
+          {ex:"DB Farmer Walk",sets:"4",reps:"30m",rest:"60s",note:""},
+          {ex:"DB Push-Up Row",sets:"4",reps:"8 each",rest:"60s",note:""},
+        ]},
+      ]},
+    ]},
+  { id:"hyper", icon:"🏗️", name:"HYPERTROPHY", desc:"Build muscle size", color:"#4A9E6B",
+    plans:[
+      { id:"hy4", name:"4-Day Push Pull Legs", weeks:10, level:"Intermediate", equip:"10–25KG DBs", days:[
+        { title:"Day 1 — Push (Chest/Shoulders/Triceps)", rows:[
+          {ex:"DB Bench Press",sets:"4",reps:"10,8,8,6",rest:"90s",note:"Full ROM."},
+          {ex:"DB Incline Press",sets:"4",reps:"10,8,8,6",rest:"90s",note:""},
+          {ex:"DB Shoulder Press",sets:"4",reps:"10,8,8,6",rest:"90s",note:""},
+          {ex:"DB Lateral Raise",sets:"3",reps:"15,12,12",rest:"60s",note:""},
+          {ex:"DB Skull Crusher",sets:"3",reps:"12,10,10",rest:"60s",note:""},
+          {ex:"DB Fly",sets:"3",reps:"12,10,10",rest:"60s",note:""},
+        ]},
+        { title:"Day 2 — Pull (Back/Biceps)", rows:[
+          {ex:"DB Bent-Over Row",sets:"4",reps:"10,8,8,6",rest:"90s",note:""},
+          {ex:"Single-Arm DB Row",sets:"4",reps:"12,10,10,8",rest:"90s",note:""},
+          {ex:"DB Pullover",sets:"3",reps:"12,10,10",rest:"75s",note:""},
+          {ex:"DB Rear Delt Fly",sets:"3",reps:"15,12,12",rest:"60s",note:""},
+          {ex:"DB Curl",sets:"4",reps:"12,10,10,8",rest:"60s",note:""},
+        ]},
+        { title:"Day 3 — Legs", rows:[
+          {ex:"DB Goblet Squat",sets:"4",reps:"10,8,8,6",rest:"90s",note:""},
+          {ex:"DB Romanian Deadlift",sets:"4",reps:"10,8,8,6",rest:"90s",note:""},
+          {ex:"DB Walking Lunge",sets:"4",reps:"10 each",rest:"90s",note:""},
+          {ex:"DB Sumo Squat",sets:"3",reps:"12,10,10",rest:"75s",note:""},
+          {ex:"DB Calf Raise",sets:"4",reps:"15",rest:"45s",note:""},
+          {ex:"DB Hip Thrust",sets:"3",reps:"12,10,10",rest:"75s",note:""},
+        ]},
+        { title:"Day 4 — Arms & Shoulders", rows:[
+          {ex:"DB Arnold Press",sets:"4",reps:"12,10,10,8",rest:"90s",note:""},
+          {ex:"DB Lateral Raise",sets:"4",reps:"15,12,12,10",rest:"60s",note:""},
+          {ex:"DB Concentration Curl",sets:"3",reps:"12,10,10",rest:"60s",note:""},
+          {ex:"DB Overhead Tricep Ext.",sets:"3",reps:"12,10,10",rest:"60s",note:""},
+          {ex:"DB Wrist Curl",sets:"3",reps:"15",rest:"45s",note:"Forearm development."},
+        ]},
+      ]},
+    ]},
+  { id:"beginner", icon:"🌱", name:"BEGINNER", desc:"Start from zero", color:"#5B9BD5",
+    plans:[
+      { id:"bg3", name:"3-Day Full Body Starter", weeks:6, level:"Beginner", equip:"2–8KG DBs", days:[
+        { title:"Day A", rows:[
+          {ex:"DB Goblet Squat",sets:"3",reps:"10",rest:"90s",note:"Chest up, slow down."},
+          {ex:"DB Bent-Over Row",sets:"3",reps:"10",rest:"90s",note:"Hinge 45°, pull to hips."},
+          {ex:"DB Shoulder Press",sets:"3",reps:"10",rest:"90s",note:"Slow and controlled."},
+          {ex:"DB Curl",sets:"3",reps:"12",rest:"75s",note:""},
+          {ex:"DB Calf Raise",sets:"3",reps:"15",rest:"45s",note:""},
+        ]},
+        { title:"Day B", rows:[
+          {ex:"DB Romanian Deadlift",sets:"3",reps:"10",rest:"90s",note:"Feel the hamstring stretch."},
+          {ex:"DB Chest Press (floor)",sets:"3",reps:"10",rest:"90s",note:"On floor if no bench."},
+          {ex:"DB Lateral Raise",sets:"3",reps:"12",rest:"75s",note:"Light weight, no swinging."},
+          {ex:"DB Hammer Curl",sets:"3",reps:"12",rest:"75s",note:""},
+          {ex:"DB Side Bend",sets:"3",reps:"15 each",rest:"45s",note:""},
+        ]},
+        { title:"Day C", rows:[
+          {ex:"DB Sumo Squat",sets:"3",reps:"12",rest:"90s",note:""},
+          {ex:"DB Incline Press",sets:"3",reps:"10",rest:"90s",note:""},
+          {ex:"DB Upright Row",sets:"3",reps:"12",rest:"75s",note:""},
+          {ex:"DB Tricep Extension",sets:"3",reps:"12",rest:"75s",note:""},
+          {ex:"DB Reverse Lunge",sets:"3",reps:"10 each",rest:"60s",note:""},
+        ]},
+      ]},
+    ]},
+  { id:"functional", icon:"⚡", name:"FUNCTIONAL", desc:"Athletic performance", color:"#9B59B6",
+    plans:[
+      { id:"fn3", name:"3-Day Athletic Program", weeks:8, level:"Intermediate", equip:"10–20KG DBs", days:[
+        { title:"Day A — Power & Explosiveness", rows:[
+          {ex:"DB Clean & Press",sets:"5",reps:"5",rest:"2 min",note:"Explosive hip drive into press."},
+          {ex:"DB Push Press",sets:"4",reps:"6",rest:"2 min",note:"Leg drive into press."},
+          {ex:"DB Jump Squat",sets:"4",reps:"8",rest:"90s",note:"Light DB, max height."},
+          {ex:"DB Farmer Walk",sets:"4",reps:"40m",rest:"90s",note:"Heavy grip training."},
+          {ex:"DB Overhead Walk",sets:"3",reps:"20m each arm",rest:"90s",note:"Core stability."},
+        ]},
+        { title:"Day B — Strength Endurance", rows:[
+          {ex:"DB Complex (no rest between)",sets:"4",reps:"6 each move",rest:"2 min",note:"RDL→Row→Clean→Press→Squat"},
+          {ex:"DB Renegade Row",sets:"4",reps:"6 each",rest:"90s",note:""},
+          {ex:"DB Lateral Lunge",sets:"3",reps:"8 each",rest:"75s",note:""},
+          {ex:"DB Turkish Get-Up",sets:"3",reps:"3 each",rest:"2 min",note:"Slow and controlled."},
+        ]},
+        { title:"Day C — Conditioning", rows:[
+          {ex:"DB Thruster",sets:"5",reps:"10",rest:"60s",note:""},
+          {ex:"DB Swing",sets:"5",reps:"15",rest:"60s",note:""},
+          {ex:"DB Burpee to Press",sets:"4",reps:"8",rest:"75s",note:""},
+          {ex:"DB Box Step-Up",sets:"4",reps:"10 each",rest:"60s",note:""},
+        ]},
+      ]},
+    ]},
+  { id:"endurance", icon:"🏃", name:"ENDURANCE", desc:"Build stamina", color:"#27AE60",
+    plans:[
+      { id:"en4", name:"4-Day Cardio + Strength", weeks:6, level:"All Levels", equip:"5–12KG DBs", days:[
+        { title:"Day 1 — Upper Endurance", rows:[
+          {ex:"DB Press (light)",sets:"4",reps:"20,18,16,15",rest:"45s",note:""},
+          {ex:"DB Row",sets:"4",reps:"20,18,16,15",rest:"45s",note:""},
+          {ex:"DB Lateral Raise",sets:"3",reps:"20",rest:"30s",note:""},
+          {ex:"30 min jog/walk",sets:"-",reps:"-",rest:"-",note:"Moderate pace outdoors."},
+        ]},
+        { title:"Day 2 — Lower Endurance", rows:[
+          {ex:"DB Goblet Squat",sets:"4",reps:"20",rest:"45s",note:""},
+          {ex:"DB Reverse Lunge",sets:"4",reps:"15 each",rest:"45s",note:""},
+          {ex:"DB Calf Raise",sets:"4",reps:"25",rest:"30s",note:""},
+          {ex:"20 min skip rope",sets:"-",reps:"-",rest:"-",note:""},
+        ]},
+        { title:"Day 3 — Cardio Circuit", rows:[
+          {ex:"DB Thruster",sets:"5",reps:"15",rest:"30s",note:"Light weight."},
+          {ex:"Jumping Jacks w/ DB",sets:"5",reps:"30",rest:"30s",note:""},
+          {ex:"DB High Knee March",sets:"5",reps:"30s",rest:"30s",note:""},
+          {ex:"Plank DB Drag",sets:"4",reps:"10 each",rest:"30s",note:""},
+        ]},
+        { title:"Day 4 — Long Endurance", rows:[
+          {ex:"DB Complex (light)",sets:"6",reps:"10 each",rest:"90s",note:""},
+          {ex:"45 min steady-state walk/jog",sets:"-",reps:"-",rest:"-",note:""},
+          {ex:"Stretching routine",sets:"-",reps:"15 min",rest:"-",note:""},
+        ]},
+      ]},
+    ]},
+];
+
+// ══════════════════════════════════════════
+//   SVG AVATARS
+// ══════════════════════════════════════════
+function avatarSVG(type, color) {
+  const c = color || '#D4942A';
+  const svgs = {
+    squat: `<svg viewBox="0 0 120 100" width="120" height="96">
+      <style>@keyframes sq{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(10px) scaleY(.85)}}.sq{animation:sq 1.4s ease-in-out infinite;transform-origin:60px 60px}</style>
+      <g class="sq">
+        <circle cx="60" cy="18" r="10" fill="${c}" opacity=".9"/>
+        <line x1="60" y1="28" x2="60" y2="55" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="35" x2="30" y2="45" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="35" x2="90" y2="45" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="42" y2="72" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="78" y2="72" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="42" y1="72" x2="38" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="78" y1="72" x2="82" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="20" y1="90" x2="100" y2="90" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    lunge: `<svg viewBox="0 0 140 100" width="130" height="96">
+      <style>@keyframes lu{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}.lu{animation:lu 1.5s ease-in-out infinite;transform-origin:70px 55px}</style>
+      <g class="lu">
+        <circle cx="70" cy="16" r="10" fill="${c}" opacity=".9"/>
+        <line x1="70" y1="26" x2="70" y2="52" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="70" y1="35" x2="48" y2="44" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="70" y1="35" x2="92" y2="44" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="70" y1="52" x2="90" y2="68" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="90" y1="68" x2="92" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="70" y1="52" x2="50" y2="70" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="50" y1="70" x2="38" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="25" y1="90" x2="105" y2="90" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    plank: `<svg viewBox="0 0 140 80" width="140" height="80">
+      <style>@keyframes pl{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}.pl{animation:pl 2s ease-in-out infinite;transform-origin:70px 50px}</style>
+      <g class="pl">
+        <circle cx="112" cy="22" r="9" fill="${c}" opacity=".9"/>
+        <line x1="102" y1="29" x2="38" y2="48" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="100" y1="32" x2="108" y2="52" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="38" y1="48" x2="22" y2="62" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="108" cy="54" r="4" fill="${c}" opacity=".7"/>
+        <circle cx="20" cy="63" r="4" fill="${c}" opacity=".7"/>
+        <line x1="38" y1="48" x2="20" y2="60" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="20" y1="60" x2="18" y2="68" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="8" y1="70" x2="130" y2="70" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    deadlift: `<svg viewBox="0 0 140 90" width="130" height="86">
+      <style>@keyframes rd{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-12deg)}}.rd{animation:rd 1.4s ease-in-out infinite;transform-origin:70px 50px}</style>
+      <g class="rd">
+        <circle cx="105" cy="22" r="9" fill="${c}" opacity=".9"/>
+        <line x1="97" y1="29" x2="40" y2="48" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="90" y1="32" x2="85" y2="52" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="40" y1="48" x2="30" y2="70" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="40" y1="48" x2="55" y2="68" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="30" y1="70" x2="26" y2="80" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="55" y1="68" x2="58" y2="80" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="10" y1="82" x2="130" y2="82" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    press: `<svg viewBox="0 0 120 110" width="110" height="100">
+      <style>@keyframes pr{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}.pr{animation:pr 1.3s ease-in-out infinite;transform-origin:60px 55px}</style>
+      <g class="pr">
+        <circle cx="60" cy="16" r="10" fill="${c}" opacity=".9"/>
+        <line x1="60" y1="26" x2="60" y2="55" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="34" x2="28" y2="22" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="34" x2="92" y2="22" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="42" y2="74" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="78" y2="74" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="42" y1="74" x2="38" y2="90" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="78" y1="74" x2="82" y2="90" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="18" y1="94" x2="102" y2="94" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    curl: `<svg viewBox="0 0 120 110" width="110" height="100">
+      <style>@keyframes cu{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-35deg)}}.cu{animation:cu 1.2s ease-in-out infinite;transform-origin:52px 60px}</style>
+      <circle cx="60" cy="16" r="10" fill="${c}" opacity=".9"/>
+      <line x1="60" y1="26" x2="60" y2="58" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+      <line x1="60" y1="40" x2="80" y2="50" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      <line x1="60" y1="58" x2="42" y2="76" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+      <line x1="60" y1="58" x2="78" y2="76" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+      <line x1="42" y1="76" x2="38" y2="92" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      <line x1="78" y1="76" x2="82" y2="92" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      <g class="cu">
+        <line x1="60" y1="40" x2="38" y2="50" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="38" y1="50" x2="30" y2="36" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="18" y1="94" x2="102" y2="94" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    carry: `<svg viewBox="0 0 130 100" width="120" height="94">
+      <style>@keyframes cw{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}.cw{animation:cw .7s ease-in-out infinite;transform-origin:65px 55px}</style>
+      <g class="cw">
+        <circle cx="65" cy="16" r="10" fill="${c}" opacity=".9"/>
+        <line x1="65" y1="26" x2="65" y2="55" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="65" y1="36" x2="36" y2="42" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="65" y1="36" x2="94" y2="32" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="96" cy="30" r="5" fill="${c}" opacity=".6"/>
+        <line x1="65" y1="55" x2="50" y2="74" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="65" y1="55" x2="80" y2="74" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="50" y1="74" x2="46" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="80" y1="74" x2="84" y2="88" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="18" y1="92" x2="112" y2="92" stroke="#333" stroke-width="2"/>
+    </svg>`,
+    generic: `<svg viewBox="0 0 120 110" width="110" height="100">
+      <style>@keyframes gn{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}.gn{animation:gn 1.4s ease-in-out infinite;transform-origin:60px 55px}</style>
+      <g class="gn">
+        <circle cx="60" cy="16" r="10" fill="${c}" opacity=".9"/>
+        <line x1="60" y1="26" x2="60" y2="58" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="36" x2="35" y2="50" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="36" x2="85" y2="50" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="58" x2="44" y2="78" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="60" y1="58" x2="76" y2="78" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+        <line x1="44" y1="78" x2="40" y2="94" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+        <line x1="76" y1="78" x2="80" y2="94" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <line x1="18" y1="96" x2="102" y2="96" stroke="#333" stroke-width="2"/>
+    </svg>`
+  };
+  return svgs[type] || svgs.generic;
+}
+
+function avatarType(exName) {
+  const n = (exName||'').toLowerCase();
+  if (n.includes('squat')||n.includes('goblet')) return 'squat';
+  if (n.includes('lunge')) return 'lunge';
+  if (n.includes('plank')||n.includes('crawl')||n.includes('climber')) return 'plank';
+  if (n.includes('row')||n.includes('deadlift')||n.includes('rdl')||n.includes('romanian')) return 'deadlift';
+  if (n.includes('press')||n.includes('push')||n.includes('thruster')||n.includes('snatch')||n.includes('clean')) return 'press';
+  if (n.includes('curl')||n.includes('fly')||n.includes('raise')) return 'curl';
+  if (n.includes('walk')||n.includes('carry')||n.includes('step')||n.includes('jog')||n.includes('run')) return 'carry';
+  return 'generic';
+}
+
+// ══════════════════════════════════════════
+//   AUDIO
+// ══════════════════════════════════════════
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(f, d, type='sine', v=0.25) {
+  try {
+    const ctx = getAudioCtx(), o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(v, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+d);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime+d);
+  } catch(e){}
+}
+const audio = {
+  beep:   ()=>playTone(880,.12),
+  restEnd:()=>{playTone(660,.1);setTimeout(()=>playTone(880,.18),140);},
+  setDone:()=>{playTone(440,.08,'square',.12);setTimeout(()=>playTone(554,.08,'square',.12),90);setTimeout(()=>playTone(660,.18,'square',.12),180);},
+  exDone: ()=>{playTone(660,.1);setTimeout(()=>playTone(784,.1),120);setTimeout(()=>playTone(880,.22),240);},
+  done:   ()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.3),i*110)),
+};
+
+// ══════════════════════════════════════════
+//   CONFETTI
+// ══════════════════════════════════════════
+let confettiFrame = null, confettiTimeout = null;
+function startConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:100},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*-canvas.height,
+    r:Math.random()*6+3,
+    color:["#D4942A","#F0B84A","#fff","#E85D3A","#4A9E6B","#5B9BD5"][Math.floor(Math.random()*6)],
+    speed:Math.random()*3+2, angle:Math.random()*360,
+    spin:(Math.random()-.5)*5, sway:(Math.random()-.5)*2,
+  }));
+  const draw = () => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r); ctx.restore();
+      p.y+=p.speed; p.x+=p.sway; p.angle+=p.spin;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+    confettiFrame=requestAnimationFrame(draw);
+  };
+  draw();
+  confettiTimeout = setTimeout(stopConfetti, 4500);
+}
+function stopConfetti() {
+  if(confettiFrame) cancelAnimationFrame(confettiFrame);
+  if(confettiTimeout) clearTimeout(confettiTimeout);
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+//   STATE
+// ══════════════════════════════════════════
+let state = {
+  selGoalId: null,
+  selPlanId: null,
+  drawerOpen: true,
+  // session state
+  screen: 'overview', // overview|active|rest|transition|done
+  dayIdx: 0,
+  exIdx: 0,
+  setNum: 1,
+  phase: 'exercise',
+  timer: 0,
+  timerActive: false,
+  paused: false,
+  sessTime: 0,
+  doneSets: [],
+  quitModal: false,
+  mapOpen: false,
+  prevEx: null,
+  // panel open states
+  printPanelOpen: false,
+  sessionPanelOpen: true,
+  // drawer goal expansion
+  expandedGoalId: null,
+};
+
+let sessInterval = null, timerTimeout = null;
+
+function getGoal() { return GOALS.find(g=>g.id===state.selGoalId)||null; }
+function getPlan() {
+  const g = getGoal();
+  return g ? (g.plans.find(p=>p.id===state.selPlanId)||null) : null;
+}
+function getColor() { return getGoal()?.color || T.g; }
+function getDay() { const p=getPlan(); return p ? p.days[state.dayIdx] : null; }
+function getExs() { return getDay()?.rows || []; }
+function getCur() { return getExs()[state.exIdx]; }
+function getNumSets() { return parseInt(getCur()?.sets)||3; }
+function parseRest(r) {
+  if (!r||r==='-') return 60;
+  const m=r.match(/(\d+)\s*min/i),s=r.match(/(\d+)s/i);
+  return m?parseInt(m[1])*60:s?parseInt(s[1]):60;
+}
+function fmtTime(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+// ══════════════════════════════════════════
+//   STATE MUTATIONS & TIMERS
+// ══════════════════════════════════════════
+function setState(updates) {
+  Object.assign(state, updates);
+  render();
+}
+
+function startSessTimer() {
+  clearInterval(sessInterval);
+  sessInterval = setInterval(()=>{ if(!state.paused){state.sessTime++;render();} }, 1000);
+}
+function stopSessTimer() { clearInterval(sessInterval); }
+
+function startRestTimer(secs) {
+  state.timer = secs; state.timerActive = true;
+  clearTimeout(timerTimeout);
+  tickRest();
+}
+function tickRest() {
+  if(!state.timerActive||state.paused) return;
+  if(state.timer <= 0) {
+    state.timerActive = false; state.phase = 'exercise'; state.screen = 'active';
+    audio.restEnd(); render(); return;
+  }
+  state.timer--;
+  render();
+  timerTimeout = setTimeout(tickRest, 1000);
+}
+
+function resumeRest() { clearTimeout(timerTimeout); tickRest(); }
+
+function resetSession() {
+  stopSessTimer(); clearTimeout(timerTimeout);
+  state.screen='overview'; state.exIdx=0; state.setNum=1; state.phase='exercise';
+  state.timer=0; state.timerActive=false; state.paused=false;
+  state.sessTime=0; state.doneSets=[]; state.quitModal=false; state.mapOpen=false; state.prevEx=null;
+  render();
+}
+
+function completeSet() {
+  const exs=getExs(), cur=getCur(), numSets=getNumSets();
+  state.doneSets.push({ex:cur.ex,s:state.setNum});
+  if(state.setNum < numSets) {
+    state.setNum++;
+    const restSecs = parseRest(cur.rest);
+    startRest(restSecs);
+  } else if(state.exIdx < exs.length-1) {
+    audio.exDone();
+    state.prevEx = cur;
+    state.screen = 'transition';
+    render();
+  } else {
+    stopSessTimer();
+    audio.done();
+    startConfetti();
+    state.screen = 'done';
+    render();
+  }
+}
+
+function startRest(secs) {
+  audio.setDone();
+  state.phase='rest'; state.screen='rest';
+  startRestTimer(secs);
+  render();
+}
+
+function goToNextExercise() {
+  state.exIdx++; state.setNum=1; state.phase='exercise'; state.timerActive=false; state.screen='active';
+  render();
+}
+
+function jumpToExercise(idx) {
+  state.exIdx=idx; state.setNum=1; state.phase='exercise'; state.timerActive=false; state.screen='active';
+  render();
+}
+
+function selectPlan(goalId, planId, close) {
+  const wasNew = goalId!==state.selGoalId || planId!==state.selPlanId;
+  if(wasNew) { stopSessTimer(); clearTimeout(timerTimeout); }
+  if(state.expandedGoalId===goalId && !close) {
+    state.expandedGoalId = null;
+  } else {
+    state.expandedGoalId = goalId;
+  }
+  state.selGoalId = goalId;
+  state.selPlanId = planId;
+  if(close) { state.drawerOpen=false; }
+  if(wasNew) { resetSession(); return; }
+  render();
+}
+
+// ══════════════════════════════════════════
+//   HELPERS — inline style strings
+// ══════════════════════════════════════════
+function s(obj) {
+  return Object.entries(obj).map(([k,v])=>`${k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}:${v}`).join(';');
+}
+
+// ══════════════════════════════════════════
+//   RENDER FUNCTIONS
+// ══════════════════════════════════════════
+function renderDrawer() {
+  const open = state.drawerOpen;
+  const {selGoalId, selPlanId, expandedGoalId} = state;
+  return `
+  <div onclick="if(getPlan())setState({drawerOpen:false})" style="${s({
+    position:'fixed',inset:0,background:'rgba(0,0,0,.75)',backdropFilter:'blur(5px)',
+    zIndex:200,opacity:open?1:0,pointerEvents:open?'all':'none',transition:'opacity .3s'
+  })}"></div>
+  <div style="${s({
+    position:'fixed',left:0,top:0,bottom:0,width:'300px',
+    background:T.s1,borderRight:`1px solid ${T.b1}`,zIndex:201,
+    transform:open?'translateX(0)':'translateX(-100%)',
+    transition:'transform .35s cubic-bezier(.77,0,.18,1)',
+    display:'flex',flexDirection:'column',
+  })}">
+    <div style="${s({padding:'18px 18px 14px',borderBottom:`1px solid ${T.b1}`,display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0})}">
+      <div>
+        <div style="font-family:Anton,sans-serif;font-size:18px;color:${T.gl};letter-spacing:1px">MUFASA</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.3em;text-transform:uppercase">Choose Your Plan</div>
+      </div>
+      <button onclick="if(getPlan())setState({drawerOpen:false})" style="${s({width:'30px',height:'30px',borderRadius:'50%',background:'none',border:`1px solid ${T.b1}`,color:T.grey,fontSize:'13px',display:'flex',alignItems:'center',justifyContent:'center'})}">✕</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:8px 0">
+      ${GOALS.map(g=>{
+        const isOpen = expandedGoalId===g.id || selGoalId===g.id;
+        return `<div>
+          <button onclick="selectPlan('${g.id}','${g.plans[0].id}',false)" style="${s({
+            width:'100%',display:'flex',alignItems:'center',gap:'10px',padding:'11px 18px',
+            background:isOpen?`${g.color}14`:'none',
+            borderLeft:`3px solid ${isOpen?g.color:'transparent'}`,
+            border:'none',borderBottom:`1px solid ${T.b1}`,
+            color:isOpen?g.color:T.grey,textAlign:'left',cursor:'pointer',
+          })}">
+            <span style="font-size:18px;flex-shrink:0">${g.icon}</span>
+            <div style="flex:1">
+              <div style="font-family:Anton,sans-serif;font-size:13px;letter-spacing:1px;color:${isOpen?g.color:T.w}">${g.name}</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-top:1px">${g.desc}</div>
+            </div>
+            <span style="color:${T.dim};font-size:12px;transform:${isOpen?'rotate(90deg)':'none'};transition:transform .2s;display:inline-block">›</span>
+          </button>
+          ${isOpen ? g.plans.map(p=>`
+            <button onclick="selectPlan('${g.id}','${p.id}',true)" style="${s({
+              width:'100%',display:'flex',alignItems:'center',gap:'8px',padding:'9px 18px 9px 44px',
+              background:selPlanId===p.id?`${g.color}18`:T.s2,
+              border:'none',borderBottom:`1px solid ${T.b1}`,
+              color:selPlanId===p.id?g.color:T.grey,textAlign:'left',cursor:'pointer',
+            })}">
+              <div style="${s({width:'5px',height:'5px',borderRadius:'50%',background:selPlanId===p.id?g.color:T.dim,flexShrink:0})}"></div>
+              <div style="flex:1">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;color:${selPlanId===p.id?g.color:T.w}">${p.name}</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim}">${p.weeks}wk · ${p.level} · ${p.equip}</div>
+              </div>
+              ${selPlanId===p.id?`<span style="font-size:10px;color:${g.color}">✓</span>`:''}
+            </button>`).join('') : ''}
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="${s({padding:'12px 18px',borderTop:`1px solid ${T.b1}`,flexShrink:0,textAlign:'center'})}">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.2em">🦁 FORGE YOUR LEGACY</div>
+    </div>
+  </div>`;
+}
+
+function renderPrintContent(goal, plan, goalColor) {
+  if(!plan) return `<div style="${s({display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'100%',gap:'10px',color:T.dim,padding:'40px',textAlign:'center'})}">
+    <div style="font-size:40px;opacity:.3">🖨️</div>
+    <div style="font-family:Anton,sans-serif;font-size:14px;color:${T.grey};letter-spacing:2px">SELECT A PLAN FIRST</div>
+  </div>`;
+  return `<div style="padding:24px 20px;overflow-y:auto;height:100%">
+    <div style="${s({borderBottom:`2px solid ${goalColor}`,paddingBottom:'14px',marginBottom:'18px'})}">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:.3em;color:${goalColor};margin-bottom:3px;text-transform:uppercase">MUFASA STRENGTH EQUIPMENT</div>
+      <div style="font-family:Anton,sans-serif;font-size:24px;line-height:1;color:${T.w}">${plan.name}</div>
+      <div style="font-family:Anton,sans-serif;font-size:12px;color:${goalColor};margin-top:2px;letter-spacing:2px">${goal.name} PROGRAM</div>
+      <div style="${s({display:'flex',gap:'16px',marginTop:'10px',flexWrap:'wrap'})}">
+        ${[['📅',plan.weeks+'wk'],['📊',plan.level],['🏋️',plan.equip],['📋',plan.days.length+' days']].map(([ic,v])=>
+          `<span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${T.grey};display:flex;align-items:center;gap:4px">${ic} ${v}</span>`
+        ).join('')}
+      </div>
+    </div>
+    ${plan.days.map((day,di)=>`
+      <div style="margin-bottom:20px">
+        <div style="${s({background:T.card2,borderLeft:`3px solid ${goalColor}`,padding:'7px 12px',marginBottom:0})}">
+          <div style="font-family:Anton,sans-serif;font-size:12px;color:${goalColor};letter-spacing:1px">${day.title}</div>
+        </div>
+        <table class="ptable" style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr>${['EXERCISE','SETS','REPS','REST','WEIGHT','NOTES'].map(h=>
+            `<th style="background:${goalColor};color:${T.bg};font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;font-size:9px;padding:5px 7px;text-align:left;white-space:nowrap">${h}</th>`
+          ).join('')}</tr></thead>
+          <tbody>${day.rows.map((row,ri)=>`
+            <tr style="background:${ri%2===0?T.card:T.s2}">
+              <td style="padding:6px 7px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;color:${T.w};border-bottom:1px solid ${T.b1}">${row.ex}</td>
+              <td style="padding:6px 7px;text-align:center;font-family:Anton,sans-serif;font-size:12px;color:${goalColor};border-bottom:1px solid ${T.b1}">${row.sets}</td>
+              <td style="padding:6px 7px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;color:${T.w};border-bottom:1px solid ${T.b1}">${row.reps}</td>
+              <td style="padding:6px 7px;text-align:center;font-family:'Barlow Condensed',sans-serif;color:${T.grey};border-bottom:1px solid ${T.b1}">${row.rest}</td>
+              <td style="padding:6px 7px;border-bottom:1px solid ${T.b1};min-width:60px"><div style="border-bottom:1px solid ${T.dim};height:14px"></div></td>
+              <td style="padding:6px 7px;font-size:9px;color:${T.dim};font-style:italic;border-bottom:1px solid ${T.b1}">${row.note}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('')}
+    <div style="${s({marginTop:'20px',borderTop:`1px solid ${T.b1}`,paddingTop:'12px',display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:'6px'})}">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim}">MUFASA STRENGTH EQUIPMENT — Kenya's #1 Home Gym</div>
+      <div style="font-family:Anton,sans-serif;font-size:9px;color:${goalColor};letter-spacing:2px">FORGE YOUR LEGACY 🦁</div>
+    </div>
+  </div>`;
+}
+
+function renderWorkoutMap(exs, exIdx, setNum, numSets, goalColor) {
+  const open = state.mapOpen;
+  return `
+  <div onclick="setState({mapOpen:false})" style="${s({
+    position:'absolute',inset:0,background:'rgba(0,0,0,.7)',backdropFilter:'blur(4px)',
+    zIndex:40,opacity:open?1:0,pointerEvents:open?'all':'none',transition:'opacity .25s'
+  })}"></div>
+  <div style="${s({
+    position:'absolute',left:0,right:0,bottom:0,
+    background:T.s1,borderTop:`1px solid ${T.b2}`,
+    borderRadius:'14px 14px 0 0',zIndex:41,
+    transform:open?'translateY(0)':'translateY(100%)',
+    transition:'transform .35s cubic-bezier(.77,0,.18,1)',
+    maxHeight:'72%',display:'flex',flexDirection:'column'
+  })}">
+    <div style="padding:10px 18px 14px;flex-shrink:0">
+      <div style="${s({width:'36px',height:'3px',background:T.b2,borderRadius:'2px',margin:'0 auto 14px'})}"></div>
+      <div style="${s({display:'flex',alignItems:'center',justifyContent:'space-between'})}">
+        <div>
+          <div style="font-family:Anton,sans-serif;font-size:15px;color:${T.gl};letter-spacing:1px">WORKOUT MAP</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-top:1px">${exs.length} exercises · tap to jump</div>
+        </div>
+        <button onclick="setState({mapOpen:false})" style="${s({width:'28px',height:'28px',borderRadius:'50%',background:'none',border:`1px solid ${T.b1}`,color:T.grey,fontSize:'12px',display:'flex',alignItems:'center',justifyContent:'center'})}">✕</button>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:0 14px 20px">
+      ${exs.map((ex,i)=>{
+        const isActive=i===exIdx, isDone=i<exIdx, isUpcoming=i>exIdx;
+        const dots = Array.from({length:parseInt(ex.sets)||3}).map((_,si)=>`
+          <div style="${s({
+            width:'6px',height:'6px',borderRadius:'50%',
+            background:isDone?goalColor:isActive&&si<setNum-1?goalColor:isActive&&si===setNum-1?`${goalColor}60`:T.s1,
+            border:`1px solid ${isDone||(isActive&&si<=setNum-1)?goalColor:T.b1}`,
+            transition:'background .3s'
+          })}"></div>`).join('');
+        return `<button onclick="jumpToExercise(${i});setState({mapOpen:false})" style="${s({
+          width:'100%',display:'flex',alignItems:'center',gap:'12px',
+          padding:'11px 13px',marginBottom:'6px',
+          background:isActive?`${goalColor}18`:isDone?T.card:T.s2,
+          border:`1px solid ${isActive?goalColor:T.b1}`,
+          borderRadius:'8px',cursor:'pointer',textAlign:'left',
+          opacity:isUpcoming?.65:1,transition:'all .2s'
+        })}">
+          <div style="${s({
+            width:'28px',height:'28px',borderRadius:'50%',flexShrink:0,
+            display:'flex',alignItems:'center',justifyContent:'center',
+            background:isDone?goalColor:isActive?`${goalColor}30`:T.s1,
+            border:`1.5px solid ${isDone?goalColor:isActive?goalColor:T.b1}`,
+            fontFamily:'Anton,sans-serif',fontSize:'11px',
+            color:isDone?T.bg:isActive?goalColor:T.dim,
+          })}">${isDone?'✓':i+1}</div>
+          <div style="flex:1">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:${isActive?goalColor:isDone?T.grey:T.w}">${ex.ex}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-top:1px">
+              ${ex.sets} sets × ${ex.reps}${isActive?` · Set ${setNum}/${numSets} active`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:3px;flex-shrink:0">${dots}</div>
+        </button>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderTransition(prevEx, nextEx, exIdx, totalEx, goalColor, sessTime) {
+  return `<div class="fadeUp" style="${s({
+    height:'100%',display:'flex',flexDirection:'column',
+    alignItems:'center',justifyContent:'center',
+    padding:'20px 18px',textAlign:'center',overflowY:'auto'
+  })}">
+    <div style="${s({
+      display:'inline-flex',alignItems:'center',gap:'6px',
+      background:`${goalColor}18`,border:`1px solid ${goalColor}50`,
+      borderRadius:'20px',padding:'5px 14px',marginBottom:'18px',
+      fontFamily:"'Barlow Condensed',sans-serif",fontSize:'10px',fontWeight:700,
+      letterSpacing:'.22em',color:goalColor,textTransform:'uppercase'
+    })}">✓ EXERCISE ${exIdx} OF ${totalEx} DONE</div>
+    <div style="${s({background:T.card,border:`1px solid ${T.b1}`,borderRadius:'10px',padding:'12px 20px',marginBottom:'14px',width:'100%',maxWidth:'320px',opacity:.6})}">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.2em;margin-bottom:4px;text-transform:uppercase">JUST FINISHED</div>
+      <div style="font-family:Anton,sans-serif;font-size:18px;color:${T.grey};line-height:1">${prevEx.ex}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${T.dim};margin-top:4px">${prevEx.sets} sets × ${prevEx.reps}</div>
+    </div>
+    <div style="font-size:22px;color:${goalColor};margin-bottom:14px">↓</div>
+    <div style="${s({background:`${goalColor}12`,border:`1.5px solid ${goalColor}`,borderRadius:'12px',padding:'16px 20px',marginBottom:'20px',width:'100%',maxWidth:'320px',boxShadow:`0 0 24px ${goalColor}25`})}">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${goalColor};letter-spacing:.25em;margin-bottom:6px;text-transform:uppercase">UP NEXT</div>
+      <div style="font-family:Anton,sans-serif;font-size:26px;color:${T.w};line-height:1;margin-bottom:8px">${nextEx.ex}</div>
+      <div style="${s({display:'flex',gap:'16px',justifyContent:'center',flexWrap:'wrap',marginBottom:'8px'})}">
+        ${[{label:'Sets',val:nextEx.sets},{label:'Reps',val:nextEx.reps},{label:'Rest',val:nextEx.rest}].map(st=>`
+          <div style="text-align:center">
+            <div style="font-family:Anton,sans-serif;font-size:16px;color:${goalColor}">${st.val}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.12em;text-transform:uppercase">${st.label}</div>
+          </div>`).join('')}
+      </div>
+      ${nextEx.note?`<div style="${s({background:T.card2,borderLeft:`2px solid ${goalColor}50`,borderRadius:'4px',padding:'5px 10px',fontSize:'10px',color:T.dim,fontStyle:'italic',textAlign:'left'})}">💡 ${nextEx.note}</div>`:''}
+    </div>
+    <div style="opacity:.5;margin-bottom:16px;filter:drop-shadow(0 0 8px ${goalColor}40)">
+      ${avatarSVG(avatarType(nextEx.ex), goalColor)}
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-bottom:16px;letter-spacing:.1em">⏱ Session time: ${fmtTime(sessTime)}</div>
+    <button onclick="goToNextExercise()" style="${s({
+      width:'100%',maxWidth:'320px',padding:'15px 0',
+      background:`linear-gradient(135deg,${T.gd},${T.gl})`,
+      border:'none',borderRadius:'8px',color:T.bg,
+      fontFamily:"'Barlow Condensed',sans-serif",fontSize:'15px',fontWeight:700,
+      letterSpacing:'.14em',textTransform:'uppercase',
+      boxShadow:`0 6px 24px ${goalColor}40`,cursor:'pointer'
+    })}">LET'S GO ▶</button>
+  </div>`;
+}
+
+function renderQuitModal() {
+  return `<div style="${s({position:'absolute',inset:0,background:'rgba(0,0,0,.9)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:50})}">
+    <div class="pop" style="${s({background:T.card,border:`1px solid ${T.b1}`,borderRadius:'10px',padding:'28px 24px',maxWidth:'260px',width:'90%',textAlign:'center'})}">
+      <div style="font-size:32px;margin-bottom:8px">⚠️</div>
+      <div style="font-family:Anton,sans-serif;font-size:24px;margin-bottom:4px">QUIT SESSION?</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:${T.dim};margin-bottom:20px">Your progress will be lost.</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="setState({quitModal:false})" style="${s({flex:1,padding:'10px 0',background:'none',border:`1px solid ${T.b1}`,color:T.grey,fontFamily:'Anton,sans-serif',fontSize:'14px',letterSpacing:'1px',borderRadius:'5px'})}">STAY</button>
+        <button onclick="resetSession()" style="${s({flex:1,padding:'10px 0',background:'#d63031',border:'none',color:'#fff',fontFamily:'Anton,sans-serif',fontSize:'14px',letterSpacing:'1px',borderRadius:'5px'})}">QUIT</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSession() {
+  const plan = getPlan(), goal = getGoal(), goalColor = getColor();
+  if(!plan) return `<div style="${s({display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'100%',gap:'10px',color:T.dim,padding:'40px',textAlign:'center'})}">
+    <div style="font-size:40px;opacity:.3">⚡</div>
+    <div style="font-family:Anton,sans-serif;font-size:14px;color:${T.grey};letter-spacing:2px">SELECT A PLAN FIRST</div>
+  </div>`;
+
+  const exs = getExs(), cur = getCur(), numSets = getNumSets();
+  const {screen,dayIdx,exIdx,setNum,sessTime,paused,timer,phase,quitModal,mapOpen,prevEx} = state;
+  const day = getDay();
+  const overallPct = exs.length?((exIdx/exs.length)+((setNum-1)/(numSets*exs.length)))*100:0;
+
+  // OVERVIEW
+  if(screen==='overview') return `
+    <div style="height:100%;overflow-y:auto;padding:20px 18px" class="fadeUp">
+      ${plan.days.length>1?`
+        <div style="margin-bottom:16px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.25em;color:${T.dim};margin-bottom:7px;text-transform:uppercase">Select Day</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${plan.days.map((d,i)=>`
+              <button onclick="setState({dayIdx:${i}})" style="${s({padding:'5px 12px',background:dayIdx===i?goalColor:T.s2,border:`1px solid ${dayIdx===i?goalColor:T.b1}`,color:dayIdx===i?T.bg:T.grey,fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:'11px',borderRadius:'20px'})}">Day ${i+1}</button>`).join('')}
+          </div>
+        </div>`:''
+      }
+      <div style="margin-bottom:14px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.25em;color:${goalColor};margin-bottom:3px;text-transform:uppercase">Today's Session</div>
+        <div style="font-family:Anton,sans-serif;font-size:20px;color:${T.w};line-height:1.1">${day.title}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${T.dim};margin-top:3px">${exs.length} exercises · ${plan.equip}</div>
+      </div>
+      <div style="${s({border:`1px solid ${T.b1}`,borderRadius:'8px',overflow:'hidden',marginBottom:'16px'})}">
+        ${exs.map((ex,i)=>`
+          <div style="${s({display:'flex',alignItems:'center',gap:'10px',padding:'9px 13px',borderBottom:i<exs.length-1?`1px solid ${T.b1}`:'none',background:i%2===0?T.card:T.s2})}">
+            <div style="${s({width:'24px',height:'24px',borderRadius:'50%',background:T.s1,border:`1px solid ${T.b1}`,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Anton,sans-serif',fontSize:'10px',color:goalColor,flexShrink:0})}">${i+1}</div>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;color:${T.w}">${ex.ex}</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-top:1px">${ex.sets} sets × ${ex.reps}</div>
+            </div>
+            <div style="font-family:Anton,sans-serif;font-size:10px;color:${goalColor};flex-shrink:0">${ex.rest}</div>
+          </div>`).join('')}
+      </div>
+      <button onclick="startSession()" style="${s({width:'100%',padding:'13px 0',background:`linear-gradient(135deg,${T.gd},${T.gl})`,border:'none',borderRadius:'6px',color:T.bg,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'15px',fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase',boxShadow:`0 4px 20px rgba(212,148,42,.3)`})}">▶ START SESSION</button>
+    </div>`;
+
+  // DONE
+  if(screen==='done') return `
+    <div style="height:100%;overflow-y:auto;padding:24px 18px;text-align:center" class="fadeUp">
+      <div style="font-size:64px;margin-bottom:12px;animation:pop .6s both">🏆</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.35em;color:${T.dim};margin-bottom:3px;text-transform:uppercase">Session Complete</div>
+      <div style="font-family:Anton,sans-serif;font-size:32px;color:${T.w};line-height:1;margin-bottom:3px">YOU CRUSHED IT</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:${goalColor};margin-bottom:22px">${day.title}</div>
+      <div style="${s({display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'8px',marginBottom:'22px'})}">
+        ${[{ic:'⏱️',v:fmtTime(sessTime),l:'TIME'},{ic:'✅',v:state.doneSets.length,l:'SETS'},{ic:'🔥',v:Math.round(sessTime/60*5),l:'KCAL'}].map(st=>`
+          <div style="${s({background:T.card,border:`1px solid ${T.b1}`,borderRadius:'8px',padding:'12px 6px'})}">
+            <div style="font-size:20px;margin-bottom:3px">${st.ic}</div>
+            <div style="font-family:Anton,sans-serif;font-size:22px;color:${goalColor};line-height:1">${st.v}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.15em;margin-top:3px">${st.l}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="resetSession()" style="${s({padding:'12px 0',background:`linear-gradient(135deg,${T.gd},${T.gl})`,border:'none',borderRadius:'6px',color:T.bg,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'13px',fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase'})}">🔁 DO IT AGAIN</button>
+        ${dayIdx<plan.days.length-1?`<button onclick="nextDay()" style="${s({padding:'10px 0',background:'none',border:`1px solid ${T.b2}`,borderRadius:'6px',color:goalColor,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'12px',fontWeight:700,letterSpacing:'.12em',textTransform:'uppercase'})}">NEXT DAY →</button>`:''}
+      </div>
+    </div>`;
+
+  // TRANSITION
+  if(screen==='transition') return `
+    <div style="height:100%;overflow-y:auto;position:relative">
+      ${renderTransition(prevEx||exs[exIdx], exs[exIdx+1], exIdx+1, exs.length, goalColor, sessTime)}
+    </div>`;
+
+  // REST
+  if(phase==='rest' && screen==='rest') {
+    const restSecs = parseRest(cur.rest);
+    const pct=(timer/restSecs)*100, r=52, circ=2*Math.PI*r;
+    return `<div style="${s({height:'100%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px 18px',position:'relative'})}">
+      ${quitModal?renderQuitModal():''}
+      ${renderWorkoutMap(exs,exIdx,setNum,numSets,goalColor)}
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.3em;color:${T.dim};margin-bottom:14px;text-transform:uppercase">REST · NEXT SET IN</div>
+      <div style="${s({position:'relative',width:'130px',height:'130px',marginBottom:'18px'})}">
+        <svg width="130" height="130" style="transform:rotate(-90deg)">
+          <circle cx="65" cy="65" r="${r}" fill="none" stroke="${T.s2}" stroke-width="6"/>
+          <circle cx="65" cy="65" r="${r}" fill="none" stroke="${goalColor}" stroke-width="6"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/>
+        </svg>
+        <div style="${s({position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'})}">
+          <div style="font-family:Anton,sans-serif;font-size:40px;line-height:1;color:${goalColor}">${timer}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.2em">SEC</div>
+        </div>
+      </div>
+      <div style="font-family:Anton,sans-serif;font-size:13px;color:${T.w};margin-bottom:3px;letter-spacing:1px">
+        ${setNum<=numSets?`SET ${setNum} OF ${numSets} — ${cur.ex}`:'NEXT EXERCISE'}
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${T.dim};margin-bottom:18px;text-align:center">
+        ${setNum<=numSets?`${cur.reps} reps`:(exs[exIdx+1]?.ex||'')}
+      </div>
+      <div style="${s({display:'flex',gap:'8px',width:'100%',maxWidth:'280px'})}">
+        <button onclick="skipRest()" style="${s({flex:1,padding:'9px 0',background:'none',border:`1px solid ${goalColor}`,color:goalColor,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'11px',fontWeight:700,letterSpacing:'.1em',borderRadius:'5px',textTransform:'uppercase'})}">SKIP REST →</button>
+        <button onclick="togglePause()" style="${s({padding:'9px 14px',background:paused?goalColor:T.s2,border:`1px solid ${T.b1}`,color:paused?T.bg:T.grey,fontFamily:'Anton,sans-serif',fontSize:'12px',borderRadius:'5px'})}">${paused?'▶':'⏸'}</button>
+        <button onclick="setState({quitModal:true})" style="${s({padding:'9px 10px',background:'none',border:'1px solid rgba(214,48,49,.25)',color:'#d63031',fontFamily:'Anton,sans-serif',fontSize:'11px',borderRadius:'5px'})}">✕</button>
+      </div>
+      <button onclick="setState({mapOpen:true})" style="${s({marginTop:'16px',background:'none',border:`1px solid ${T.b1}`,color:T.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'9px',fontWeight:700,letterSpacing:'.12em',padding:'5px 14px',borderRadius:'20px',cursor:'pointer',textTransform:'uppercase'})}">☰ WORKOUT MAP</button>
+    </div>`;
+  }
+
+  // ACTIVE EXERCISE
+  return `<div style="${s({height:'100%',display:'flex',flexDirection:'column',padding:'14px 18px',position:'relative'})}">
+    ${quitModal?renderQuitModal():''}
+    ${renderWorkoutMap(exs,exIdx,setNum,numSets,goalColor)}
+    <!-- top bar -->
+    <div style="${s({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px',flexShrink:0})}">
+      <button onclick="togglePause()" style="${s({padding:'4px 11px',background:paused?goalColor:T.s2,border:`1px solid ${paused?goalColor:T.b1}`,color:paused?T.bg:T.grey,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'10px',fontWeight:700,letterSpacing:'.1em',borderRadius:'4px',textTransform:'uppercase'})}">${paused?'▶ GO':'⏸ PAUSE'}</button>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${T.dim}">⏱ ${fmtTime(sessTime)}</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="setState({mapOpen:true})" style="${s({padding:'4px 9px',background:T.s2,border:`1px solid ${T.b1}`,color:goalColor,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'9px',fontWeight:700,letterSpacing:'.08em',borderRadius:'4px',textTransform:'uppercase'})}">☰ MAP</button>
+        <button onclick="setState({quitModal:true})" style="${s({padding:'4px 9px',background:'none',border:'1px solid rgba(214,48,49,.2)',color:'#d63031',fontFamily:"'Barlow Condensed',sans-serif",fontSize:'9px',fontWeight:700,letterSpacing:'.1em',borderRadius:'4px'})}">✕ QUIT</button>
+      </div>
+    </div>
+    <!-- overall progress bar -->
+    <div style="${s({height:'3px',background:T.s2,borderRadius:'2px',marginBottom:'8px',flexShrink:0})}">
+      <div style="${s({height:'100%',width:`${overallPct}%`,background:`linear-gradient(90deg,${T.gd},${T.gl})`,borderRadius:'2px',transition:'width .6s'})}"></div>
+    </div>
+    <!-- exercise dots -->
+    <div style="${s({display:'flex',alignItems:'center',justifyContent:'center',gap:'5px',marginBottom:'8px',flexShrink:0})}">
+      ${exs.map((_,i)=>`<div style="${s({
+        width:i===exIdx?'18px':'6px',height:'6px',borderRadius:'3px',
+        background:i<=exIdx?goalColor:T.s2,
+        border:`1px solid ${i<=exIdx?goalColor:T.b1}`,
+        opacity:i>exIdx?.4:1,transition:'all .3s'
+      })}"></div>`).join('')}
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.25em;color:${T.dim};text-align:center;margin-bottom:8px;flex-shrink:0;text-transform:uppercase">Exercise ${exIdx+1} of ${exs.length}</div>
+    ${paused?`
+      <div style="${s({flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'})}">
+        <div class="pulse" style="font-family:Anton,sans-serif;font-size:48px;color:${T.grey};letter-spacing:3px">PAUSED</div>
+        <button onclick="togglePause()" style="${s({marginTop:'18px',padding:'11px 32px',background:goalColor,border:'none',color:T.bg,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'14px',fontWeight:700,letterSpacing:'.12em',borderRadius:'5px',textTransform:'uppercase'})}">▶ RESUME</button>
+      </div>`:`
+      <!-- avatar -->
+      <div style="${s({display:'flex',justifyContent:'center',alignItems:'center',marginBottom:'6px',flexShrink:0,height:'100px'})}">
+        <div style="filter:drop-shadow(0 0 12px ${goalColor}60)">
+          ${avatarSVG(avatarType(cur.ex), goalColor)}
+        </div>
+      </div>
+      <!-- exercise name -->
+      <div style="text-align:center;margin-bottom:10px;flex-shrink:0">
+        <div style="font-family:Anton,sans-serif;font-size:24px;line-height:1;color:${T.w};margin-bottom:6px">${cur.ex}</div>
+        ${cur.note?`<div style="${s({background:T.card2,border:`1px solid ${T.b1}`,borderLeft:`2px solid ${goalColor}50`,borderRadius:'4px',padding:'5px 10px',fontSize:'10px',color:T.dim,fontStyle:'italic',display:'inline-block',maxWidth:'90%'})}">💡 ${cur.note}</div>`:''}
+      </div>
+      <!-- stat cards -->
+      <div style="${s({display:'flex',gap:'8px',justifyContent:'center',marginBottom:'10px',flexShrink:0})}">
+        ${[{label:'REPS/TIME',value:cur.reps,color:goalColor},{label:'SET',value:`${setNum}/${cur.sets}`,color:T.w},{label:'REST',value:cur.rest,color:T.grey}].map(st=>`
+          <div style="${s({background:T.card,border:`1px solid ${T.b1}`,borderRadius:'7px',padding:'10px 12px',textAlign:'center',flex:1})}">
+            <div style="font-family:Anton,sans-serif;font-size:20px;color:${st.color};line-height:1">${st.value}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:8px;color:${T.dim};letter-spacing:.12em;margin-top:3px;text-transform:uppercase">${st.label}</div>
+          </div>`).join('')}
+      </div>
+      <!-- set progress dots -->
+      <div style="${s({display:'flex',gap:'5px',justifyContent:'center',marginBottom:'10px',flexShrink:0})}">
+        ${Array.from({length:numSets}).map((_,i)=>`
+          <div style="${s({width:'28px',height:'3px',borderRadius:'2px',background:i<setNum-1?goalColor:i===setNum-1?`${goalColor}70`:T.s2,transition:'background .3s'})}"></div>`).join('')}
+      </div>
+      <!-- next exercise preview -->
+      ${exIdx<exs.length-1&&setNum===numSets?`
+        <div style="${s({display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginBottom:'10px',flexShrink:0,background:T.card2,border:`1px solid ${T.b1}`,borderRadius:'6px',padding:'6px 12px'})}">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.12em;text-transform:uppercase">NEXT UP →</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;color:${goalColor}">${exs[exIdx+1].ex}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim}">${exs[exIdx+1].sets} × ${exs[exIdx+1].reps}</div>
+        </div>`:''}
+      <!-- action button -->
+      <button onclick="completeSet()" style="${s({
+        width:'100%',padding:'14px 0',
+        background:`linear-gradient(135deg,${T.gd},${T.gl})`,
+        border:'none',borderRadius:'6px',color:T.bg,
+        fontFamily:"'Barlow Condensed',sans-serif",fontSize:'14px',fontWeight:700,
+        letterSpacing:'.14em',textTransform:'uppercase',
+        boxShadow:`0 4px 18px rgba(212,148,42,.3)`,flexShrink:0
+      })}">${setNum<numSets?`SET ${setNum} DONE →`:exIdx<exs.length-1?'FINISH EXERCISE →':'COMPLETE SESSION 🏆'}</button>`}
+  </div>`;
+}
+
+function renderPanel(id, title, icon, badge, color, defaultOpen, showPrint, children) {
+  const open = id==='print'?state.printPanelOpen:state.sessionPanelOpen;
+  return `<div id="panel-${id}" style="${s({border:`1px solid ${open?color+'50':T.b1}`,borderRadius:'10px',overflow:'hidden',transition:'border-color .25s',flexShrink:0})}">
+    <button class="panel-toggle" onclick="togglePanel('${id}')" style="${s({
+      width:'100%',display:'flex',alignItems:'center',gap:'10px',padding:'13px 16px',
+      background:open?`${color}12`:T.s2,border:'none',textAlign:'left',cursor:'pointer',
+      borderBottom:open?`1px solid ${color}30`:'none',transition:'background .2s'
+    })}">
+      <span style="font-size:16px;flex-shrink:0">${icon}</span>
+      <div style="flex:1">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.15em;color:${open?color:T.grey};text-transform:uppercase">${title}</div>
+        ${badge?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:${T.dim};margin-top:1px">${badge}</div>`:''}
+      </div>
+      ${showPrint&&open?`<button onclick="event.stopPropagation();doPrint()" style="${s({padding:'3px 10px',background:`linear-gradient(135deg,${T.gd},${T.gl})`,border:'none',color:T.bg,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'9px',fontWeight:700,letterSpacing:'.1em',borderRadius:'4px',marginRight:'8px'})}">🖨️ PRINT</button>`:''}
+      <span style="color:${open?color:T.dim};font-size:16px;transform:${open?'rotate(180deg)':'none'};transition:transform .25s;flex-shrink:0">⌄</span>
+    </button>
+    <div class="panel-body" style="${s({maxHeight:open?'70vh':'0',overflow:'hidden',transition:'max-height .4s cubic-bezier(.77,0,.18,1)'})}">
+      <div class="panel-inner" style="${s({height:'70vh',overflow:'hidden',display:'flex',flexDirection:'column',background:id==='print'?T.bg:T.s1})}">
+        ${children}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHome() {
+  const goalColor = getColor();
+  return `<div class="fadeUp" style="${s({flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',padding:'0 20px'})}">
+    <div style="font-size:52px;margin-bottom:14px">🦁</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.4em;color:${T.dim};margin-bottom:5px;text-transform:uppercase">Mufasa Strength Equipment</div>
+    <div style="font-family:Anton,sans-serif;font-size:44px;line-height:.92;color:${T.w};margin-bottom:5px">CHOOSE YOUR<br/><span style="color:${T.gl}">BATTLE PLAN</span></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:13px;color:${T.grey};line-height:1.65;margin-bottom:28px;max-width:340px">
+      Tap <strong style="color:${T.gl}">Choose Plan</strong> to browse goals. Then use the panels below — print your reference sheet or run a live session.
+    </div>
+    <button onclick="setState({drawerOpen:true})" class="glow" style="${s({padding:'12px 28px',background:`linear-gradient(135deg,${T.gd},${T.gl})`,border:'none',borderRadius:'6px',color:T.bg,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'13px',fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase'})}">▶ CHOOSE YOUR PLAN</button>
+  </div>`;
+}
+
+function render() {
+  const plan = getPlan(), goal = getGoal(), color = getColor();
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${renderDrawer()}
+    <!-- HEADER -->
+    <div class="no-print" style="${s({height:'50px',flexShrink:0,background:T.s1,borderBottom:`1px solid ${T.b1}`,padding:'0 18px',display:'flex',alignItems:'center',gap:'10px',zIndex:80})}">
+      <button onclick="setState({drawerOpen:true})" style="${s({display:'flex',alignItems:'center',gap:'7px',padding:'5px 12px',background:T.s2,border:`1px solid ${T.b2}`,borderRadius:'6px',color:T.gl,fontFamily:"'Barlow Condensed',sans-serif",fontSize:'11px',fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',flexShrink:0})}">
+        <span style="display:flex;flex-direction:column;gap:2.5px">
+          ${[14,10,14].map(w=>`<span style="width:${w}px;height:1.5px;background:${T.gl};display:block;border-radius:1px"></span>`).join('')}
+        </span>
+        ${plan?'Change Plan':'Choose Plan'}
+      </button>
+      ${goal?`<div style="${s({display:'flex',alignItems:'center',gap:'6px',overflow:'hidden',flex:1})}">
+        <span style="color:${T.b2};font-size:13px">›</span>
+        <span style="font-family:Anton,sans-serif;font-size:12px;color:${goal.color};letter-spacing:1px;white-space:nowrap">${goal.icon} ${goal.name}</span>
+        ${plan?`<span style="color:${T.b2};font-size:13px">›</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:${T.grey};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${plan.name}</span>`:''}
+      </div>`:''}
+      <div style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:9px;color:${T.dim};letter-spacing:.2em;flex-shrink:0">🦁</div>
+    </div>
+    <!-- MAIN -->
+    <div style="${s({flex:1,overflowY:'auto',padding:'14px 14px 20px',display:'flex',flexDirection:'column',gap:'10px'})}">
+      ${!plan ? renderHome() : `
+        ${renderPanel('print','Printable Plan','📋',
+          plan?`${plan.name} · ${plan.days.length} training days`:'',
+          color,false,true,
+          `<div style="flex:1;overflow-y:auto">${renderPrintContent(goal,plan,color)}</div>`
+        )}
+        ${renderPanel('session','Interactive Session','⚡',
+          plan?`${plan.name} · Tap to train`:'',
+          color,true,false,
+          `<div style="flex:1;overflow:hidden">${renderSession()}</div>`
+        )}
+      `}
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//   GLOBAL ACTIONS (called from HTML)
+// ══════════════════════════════════════════
+function togglePanel(id) {
+  if(id==='print') state.printPanelOpen = !state.printPanelOpen;
+  else state.sessionPanelOpen = !state.sessionPanelOpen;
+  render();
+}
+
+function togglePause() {
+  state.paused = !state.paused;
+  if(!state.paused && state.timerActive) resumeRest();
+  render();
+}
+
+function skipRest() {
+  clearTimeout(timerTimeout);
+  state.timerActive=false; state.phase='exercise'; state.screen='active';
+  audio.beep(); render();
+}
+
+function startSession() {
+  state.screen='active'; state.exIdx=0; state.setNum=1;
+  state.phase='exercise'; state.sessTime=0; state.doneSets=[];
+  startSessTimer(); render();
+}
+
+function nextDay() {
+  state.dayIdx++;
+  resetSession();
+}
+
+function doPrint() {
+  window.print();
+}
+
+// ══════════════════════════════════════════
+//   INIT
+// ══════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
