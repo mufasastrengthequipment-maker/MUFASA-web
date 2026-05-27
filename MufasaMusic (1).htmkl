@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUFASA — Music</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#D4942A;--gl:#F0B84A;--gd:#A8741F;
+  --gdim:rgba(212,148,42,.2);--gfaint:rgba(212,148,42,.06);
+  --bg:#050403;--s1:#0C0A08;--s2:#121008;
+  --card:#18150F;--card2:#1F1B12;
+  --b1:rgba(212,148,42,.13);--b2:rgba(212,148,42,.32);
+  --w:#F4EFE4;--grey:#A09890;--dim:#7A7570;
+  --r:6px;--r2:12px;--r3:20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow-x:hidden;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--w);}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--card2);border:1px solid var(--b2);border-radius:var(--r2);padding:9px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:.06em;color:var(--w);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.wrap{min-height:100vh;padding:20px 18px 80px;max-width:700px;margin:0 auto;}
+.m-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--b1);}
+.m-logo{font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--g);}
+.m-title{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);}
+.m-live{display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--g);}
+.m-live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--g);animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.mwrap{background:var(--card);border:1px solid var(--b1);border-radius:var(--r3);padding:22px;margin-bottom:18px;}
+.mnow{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.mdisc{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gd),var(--s2));border:3px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.mdisc.sp{animation:sp 4s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+#mCover{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--b2);display:none;flex-shrink:0;}
+#mCover.sp{animation:sp 4s linear infinite;}
+.minfo{flex:1;min-width:0;}
+.mtrack{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.martist{font-size:.8rem;color:var(--grey);margin-top:2px;}
+.mctrls{display:flex;align-items:center;gap:9px;margin-top:10px;}
+.mc{background:none;border:none;color:var(--grey);font-size:1.1rem;cursor:pointer;padding:4px;transition:color .2s;}
+.mc:hover{color:var(--g);}
+.mc-play{width:42px;height:42px;background:linear-gradient(135deg,var(--gd),var(--gl));border:none;border-radius:50%;color:var(--bg);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s;box-shadow:0 4px 14px rgba(212,148,42,.3);}
+.mc-play:hover{transform:scale(1.08);}
+#mEmbedArea{margin-bottom:10px;display:none;}
+#mEmbedArea iframe,#mEmbedArea video{width:100%;border-radius:var(--r2);border:none;display:block;}
+.mprog{width:100%;height:3px;background:var(--b1);border-radius:2px;overflow:hidden;margin-top:12px;cursor:pointer;}
+.mprogf{height:100%;background:linear-gradient(90deg,var(--gd),var(--gl));border-radius:2px;width:0;transition:width .5s linear;}
+.m-time{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--dim);margin-top:5px;}
+.worm-wrap{display:flex;gap:3px;margin-top:10px;align-items:center;}
+.wseg{height:4px;background:var(--b1);border-radius:2px;flex:1;transition:background .3s;}
+.wseg.done{background:var(--gd);}
+.wseg.act{background:var(--gl);animation:wp .8s ease infinite alternate;}
+@keyframes wp{from{opacity:.6;}to{opacity:1;}}
+.local-bar{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px dashed var(--b2);border-radius:var(--r2);padding:11px 14px;margin-bottom:16px;cursor:pointer;transition:border-color .2s,background .2s;}
+.local-bar:hover{border-color:var(--g);background:var(--gfaint);}
+.local-bar-ic{font-size:1.1rem;flex-shrink:0;}
+.local-bar-txt{flex:1;min-width:0;}
+.local-bar-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gl);}
+.local-bar-sub{font-size:.71rem;color:var(--dim);margin-top:1px;}
+.local-badge{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--gdim);border:1px solid var(--b2);border-radius:4px;color:var(--g);padding:2px 7px;flex-shrink:0;}
+#localInput{display:none;}
+.mtabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+.mtab{background:none;border:1px solid var(--b1);color:var(--grey);padding:5px 13px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.mtab.on,.mtab:hover{border-color:var(--g);color:var(--g);background:var(--gfaint);}
+.mlist{display:flex;flex-direction:column;gap:1px;}
+.mitem{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--r);cursor:pointer;transition:background .2s;}
+.mitem:hover,.mitem.act{background:var(--gfaint);}
+.mitem.act{border-left:2px solid var(--g);padding-left:9px;}
+.mitem.local-track .mitem-a::after{content:' · LOCAL';color:var(--gd);font-size:.68rem;}
+.mnum{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:var(--dim);width:22px;text-align:center;flex-shrink:0;}
+.mitem-thumb{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid var(--b1);flex-shrink:0;}
+.mitem-i{flex:1;min-width:0;}
+.mitem-t{font-size:.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mitem-a{font-size:.73rem;color:var(--grey);}
+.mitem-d{font-size:.73rem;color:var(--dim);flex-shrink:0;}
+.mshr{background:none;border:none;color:var(--dim);cursor:pointer;padding:3px;font-size:.82rem;transition:color .2s;flex-shrink:0;}
+.mshr:hover{color:var(--g);}
+.empty{padding:36px 20px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:var(--grey);line-height:1.7;}
+.empty strong{color:var(--g);display:block;font-size:1.05rem;margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<input type="file" id="localInput" accept="audio/*" multiple>
+
+<div class="wrap">
+  <div class="m-header">
+    <div>
+      <div class="m-logo">MUFASA</div>
+      <div class="m-title">Workout Music</div>
+    </div>
+    <div class="m-live">WORM PLAYLIST</div>
+  </div>
+
+  <div class="mwrap">
+    <div id="mEmbedArea"></div>
+    <div class="mnow">
+      <div id="mMediaArea" style="flex-shrink:0;position:relative;">
+        <img id="mCover" alt="cover">
+        <div class="mdisc" id="mDisc">🎵</div>
+      </div>
+      <div class="minfo">
+        <div class="mtrack" id="mTrack">Select a track below</div>
+        <div class="martist" id="mArtist">—</div>
+        <div class="mctrls">
+          <button class="mc" onclick="prevT()">⏮</button>
+          <button class="mc-play" id="mPlayBtn" onclick="togglePlay()">▶</button>
+          <button class="mc" onclick="nextT()">⏭</button>
+          <button class="mc" id="mShuf" onclick="toggleShuf()" title="Shuffle" style="opacity:.4">🔀</button>
+          <button class="mc" id="mRep" onclick="toggleRepeat()" title="Repeat" style="opacity:.4">🔁</button>
+        </div>
+      </div>
+    </div>
+    <div class="mprog" onclick="seekAudio(event)"><div class="mprogf" id="mProg"></div></div>
+    <div class="m-time"><span id="mTimeCur">0:00</span><span id="mTimeDur">—</span></div>
+    <div class="worm-wrap" id="worm"></div>
+  </div>
+
+  <div class="local-bar" onclick="document.getElementById('localInput').click()">
+    <div class="local-bar-ic">📁</div>
+    <div class="local-bar-txt">
+      <div class="local-bar-lbl">Load Local Files</div>
+      <div class="local-bar-sub">MP3, WAV, AAC, FLAC — plays on this device only</div>
+    </div>
+    <div class="local-badge" id="localBadge" style="display:none">0 loaded</div>
+  </div>
+
+  <div class="mtabs" id="mTabs">
+    <button class="mtab on" onclick="filterM('all',this)">ALL</button>
+    <button class="mtab" onclick="filterM('hype',this)">HYPE</button>
+    <button class="mtab" onclick="filterM('afro',this)">AFROBEATS</button>
+    <button class="mtab" onclick="filterM('hip',this)">HIP HOP</button>
+    <button class="mtab" onclick="filterM('elec',this)">ELECTRONIC</button>
+    <button class="mtab" onclick="filterM('local',this)">📁 MY FILES</button>
+  </div>
+
+  <div class="mlist" id="mList"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+let db=null,mTracks=[],mLocalTracks=[],mAllTracks=[],mNow=0,mPlaying=false,mShuffle=false,mRepeat=false,mFilter='all',progTimer=null,progPct=0;
+const audio=new Audio();
+let toastTimer;
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
+
+async function fbGetCollection(path){try{if(!db)return[];const s=await db.ref(path).once('value');const v=s.val();if(!v)return[];return Object.entries(v).map(([id,d])=>({id,...d})).reverse();}catch(e){return[];}}
+
+function rebuildAll(){mAllTracks=[...mTracks,...mLocalTracks];}
+
+function filterM(f,btn){document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');mFilter=f;renderMList();}
+
+function getFilteredT(){if(mFilter==='local')return mAllTracks.filter(t=>t.localFile);if(mFilter==='all')return mAllTracks;return mAllTracks.filter(t=>t.cat===mFilter&&!t.localFile);}
+
+function renderMList(){
+  const tracks=getFilteredT();
+  const el=document.getElementById('mList');
+  if(!tracks.length){
+    el.innerHTML=mFilter==='local'
+      ?'<div class="empty"><strong>No local files loaded</strong>Tap "Load Local Files" above to add MP3s from this device.</div>'
+      :'<div class="empty"><strong>No tracks yet</strong>Add music via the Admin Panel → Music</div>';
+    return;
+  }
+  el.innerHTML=tracks.map((t,i)=>{
+    const gi=mAllTracks.indexOf(t);
+    const isNow=gi===mNow;
+    const isLocal=!!t.localFile;
+    return `<div class="mitem${isNow?' act':''}${isLocal?' local-track':''}" onclick="playTrack(${gi})">
+      <div class="mnum">${isNow&&mPlaying?'▶':i+1}</div>
+      ${t.img?`<img class="mitem-thumb" src="${t.img}" onerror="this.style.display='none'" alt="">`:``}
+      <div class="mitem-i">
+        <div class="mitem-t">${t.title}</div>
+        <div class="mitem-a">${t.artist||'Unknown'}${t.cat&&!isLocal?' · '+t.cat.toUpperCase():''}</div>
+      </div>
+      <div class="mitem-d">${t.dur||''}</div>
+      ${!isLocal?`<button class="mshr" onclick="shareTrack(event,'${t.id}')">🔗</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderWorm(){document.getElementById('worm').innerHTML=mAllTracks.map((t,i)=>`<div class="wseg ${i<mNow?'done':i===mNow?'act':''}" title="${t.title}"></div>`).join('');}
+
+function getMediaType(url){
+  if(!url)return'none';
+  if(url.startsWith('blob:'))return'audio';
+  if(url.match(/\.(mp3|wav|ogg|aac|m4a|flac)/i))return'audio';
+  if(url.match(/\.(mp4|webm|mov|avi)/i))return'video';
+  if(url.includes('youtube.com')||url.includes('youtu.be'))return'youtube';
+  if(url.includes('soundcloud.com'))return'soundcloud';
+  if(url.includes('spotify.com'))return'spotify';
+  return'link';
+}
+
+function getMusicEmbed(url){
+  const type=getMediaType(url);
+  if(type==='youtube'){const m=url.match(/(?:v=|youtu\.be\/|shorts\/)([^&?/]+)/);return m?{type:'yt',embed:'https://www.youtube.com/embed/'+m[1]+'?autoplay=1',h:185}:null;}
+  if(type==='soundcloud')return{type:'sc',embed:`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23D4942A&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`,h:120};
+  if(type==='spotify'){const e=url.replace('open.spotify.com','open.spotify.com/embed').replace('/track/','/embed/track/');return{type:'sp',embed:e,h:80};}
+  return null;
+}
+
+function fmtTime(s){if(!s||isNaN(s))return'0:00';const m=Math.floor(s/60);return m+':'+Math.floor(s%60).toString().padStart(2,'0');}
+
+function clearMedia(){
+  audio.pause();audio.src='';audio.ontimeupdate=null;audio.onended=null;
+  clearTimeout(progTimer);
+  document.getElementById('mEmbedArea').innerHTML='';
+  document.getElementById('mEmbedArea').style.display='none';
+  document.getElementById('mProg').style.width='0%';
+  document.getElementById('mTimeCur').textContent='0:00';
+  document.getElementById('mTimeDur').textContent='—';
+  const disc=document.getElementById('mDisc');const cover=document.getElementById('mCover');
+  disc.classList.remove('sp');disc.style.display='flex';
+  cover.style.display='none';cover.classList.remove('sp');cover.src='';
+  document.getElementById('mPlayBtn').onclick=()=>togglePlay();
+}
+
+function playTrack(idx){
+  clearMedia();mNow=idx;mPlaying=true;
+  const t=mAllTracks[idx];if(!t)return;
+  document.getElementById('mTrack').textContent=t.title;
+  document.getElementById('mArtist').textContent=(t.artist||'Unknown')+(t.cat&&!t.localFile?' · '+t.cat.toUpperCase():'');
+  document.getElementById('mPlayBtn').textContent='⏸';
+  if(t.img){const c=document.getElementById('mCover');c.src=t.img;c.style.display='block';c.classList.add('sp');document.getElementById('mDisc').style.display='none';}
+  else{document.getElementById('mDisc').style.display='flex';document.getElementById('mDisc').classList.add('sp');}
+  renderMList();renderWorm();toast('🎵 '+t.title);
+  const type=getMediaType(t.src);
+  if(type==='audio'){
+    audio.src=t.src;audio.play().catch(()=>toast('⚠️ Could not autoplay'));
+    audio.ontimeupdate=()=>{const p=audio.duration?(audio.currentTime/audio.duration*100):0;document.getElementById('mProg').style.width=p+'%';document.getElementById('mTimeCur').textContent=fmtTime(audio.currentTime);document.getElementById('mTimeDur').textContent=fmtTime(audio.duration);};
+    audio.onended=()=>{if(mRepeat)playTrack(mNow);else nextT();};
+  } else if(type==='video'){
+    const ea=document.getElementById('mEmbedArea');const vid=document.createElement('video');
+    vid.src=t.src;vid.autoplay=true;vid.style.cssText='max-height:200px;background:#000;';
+    vid.ontimeupdate=()=>{const p=vid.duration?(vid.currentTime/vid.duration*100):0;document.getElementById('mProg').style.width=p+'%';document.getElementById('mTimeCur').textContent=fmtTime(vid.currentTime);document.getElementById('mTimeDur').textContent=fmtTime(vid.duration);};
+    vid.onended=()=>{if(mRepeat)playTrack(mNow);else nextT();};
+    ea.innerHTML='';ea.appendChild(vid);ea.style.display='block';
+    document.getElementById('mPlayBtn').onclick=()=>{if(vid.paused){vid.play();mPlaying=true;document.getElementById('mPlayBtn').textContent='⏸';}else{vid.pause();mPlaying=false;document.getElementById('mPlayBtn').textContent='▶';}};
+  } else {
+    const info=getMusicEmbed(t.src);
+    const ea=document.getElementById('mEmbedArea');
+    if(info){const iframe=document.createElement('iframe');iframe.src=info.embed;iframe.height=info.h;iframe.allow='autoplay;encrypted-media';ea.innerHTML='';ea.appendChild(iframe);ea.style.display='block';startProgress();}
+    else if(t.src){ea.innerHTML=`<div style="text-align:center;padding:20px;background:var(--s1);border-radius:var(--r2);"><div style="color:var(--grey);font-size:.8rem;margin-bottom:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em">This track opens in an external app</div><a href="${t.src}" target="_blank" style="background:linear-gradient(135deg,var(--gd),var(--gl));color:var(--bg);padding:9px 22px;border-radius:var(--r);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.12em;text-decoration:none;font-size:.88rem">▶ OPEN TRACK ↗</a></div>`;ea.style.display='block';startProgress();}
+    else startProgress();
+  }
+}
+
+function seekAudio(e){const pct=e.offsetX/e.currentTarget.offsetWidth;if(audio.src&&audio.duration)audio.currentTime=pct*audio.duration;}
+function togglePlay(){mPlaying=!mPlaying;if(mPlaying){if(audio.src)audio.play().catch(()=>{});else startProgress();document.getElementById('mDisc').classList.add('sp');document.getElementById('mCover').classList.add('sp');}else{if(audio.src)audio.pause();else clearTimeout(progTimer);document.getElementById('mDisc').classList.remove('sp');document.getElementById('mCover').classList.remove('sp');}document.getElementById('mPlayBtn').textContent=mPlaying?'⏸':'▶';}
+function prevT(){if(!mAllTracks.length)return;clearMedia();playTrack((mNow-1+mAllTracks.length)%mAllTracks.length);}
+function nextT(){if(!mAllTracks.length)return;clearMedia();playTrack(mShuffle?Math.floor(Math.random()*mAllTracks.length):(mNow+1)%mAllTracks.length);}
+function toggleShuf(){mShuffle=!mShuffle;document.getElementById('mShuf').style.opacity=mShuffle?'1':'.4';toast(mShuffle?'Shuffle ON':'Shuffle OFF');}
+function toggleRepeat(){mRepeat=!mRepeat;document.getElementById('mRep').style.opacity=mRepeat?'1':'.4';toast(mRepeat?'Repeat ON':'Repeat OFF');}
+function startProgress(){clearTimeout(progTimer);progPct=0;function tick(){if(!mPlaying)return;progPct=Math.min(100,progPct+.8);document.getElementById('mProg').style.width=progPct+'%';if(progPct>=100){if(mRepeat)playTrack(mNow);else nextT();}else progTimer=setTimeout(tick,300);}tick();}
+function shareTrack(e,id){e.stopPropagation();const url=window.location.origin+window.location.pathname+'?track='+id;navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!')).catch(()=>toast('?track='+id));}
+function playByShare(id){const idx=mAllTracks.findIndex(t=>t.id===id);if(idx>=0)playTrack(idx);}
+
+document.getElementById('localInput').addEventListener('change',function(e){
+  const files=Array.from(e.target.files);if(!files.length)return;
+  files.forEach(file=>{
+    const url=URL.createObjectURL(file);
+    const name=file.name.replace(/\.[^/.]+$/,'').replace(/_/g,' ');
+    const probe=new Audio(url);
+    const done=(dur)=>{
+      const id='local_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      mLocalTracks.push({id,title:name,artist:'Local File',cat:'local',src:url,dur,localFile:true,fileName:file.name});
+      rebuildAll();renderWorm();renderMList();
+      const badge=document.getElementById('localBadge');badge.style.display='block';badge.textContent=mLocalTracks.length+' loaded';
+    };
+    probe.addEventListener('loadedmetadata',()=>{const m=Math.floor(probe.duration/60);done(m+':'+Math.floor(probe.duration%60).toString().padStart(2,'0'));},{once:true});
+    probe.addEventListener('error',()=>done('?:??'),{once:true});
+  });
+  toast('📁 '+files.length+' file'+(files.length>1?'s':'')+' loaded');
+  this.value='';
+});
+
+async function init(){
+  try{
+    firebase.initializeApp({apiKey:"AIzaSyDs3UziZ9YHFKw9L8LYtM1ph3WYyaM68AU",authDomain:"mufasa-strength-0719.firebaseapp.com",projectId:"mufasa-strength-0719",storageBucket:"mufasa-strength-0719.firebasestorage.app",messagingSenderId:"764857435386",appId:"1:764857435386:web:57dc6ed9d178c426fbb543",databaseURL:"https://mufasa-strength-0719-default-rtdb.firebaseio.com"});
+    db=firebase.database();
+    // Live listener — updates instantly when admin adds/removes tracks
+    db.ref('songs').on('value',snap=>{const v=snap.val();mTracks=v?Object.entries(v).map(([id,d])=>({id,...d})).reverse():[];rebuildAll();renderWorm();renderMList();});
+  }catch(e){console.warn('Firebase:',e);}
+  const up=new URLSearchParams(window.location.search);const tp=up.get('track');if(tp)setTimeout(()=>playByShare(tp),800);
+}
+
+init();
+</script>
+</body>
+</html>
